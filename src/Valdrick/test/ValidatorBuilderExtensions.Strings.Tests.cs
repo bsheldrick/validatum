@@ -163,6 +163,26 @@ namespace Valdrick.Tests
         }
 
         [Fact]
+        public void NotEmptyFor_ShouldNotAddBrokenRule_WhenTargetIsNotNullOrEmpty()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .NotEmptyFor(e => e.Employer.Name)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            {
+                FirstName = "John",
+                Employer = new Company { Id = 5, Name = "Acme Inc." }
+            });
+
+            // assert
+            Assert.True(result.IsValid);
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
         public void NotEmptyFor_ShouldUseExpressionMemberName_AsKeyInBrokenRule_WhenKeyNotProvided()
         {
             // arrange
@@ -225,23 +245,241 @@ namespace Valdrick.Tests
         }
         
         [Fact]
-        public void NotEmptyFor_ShouldNotAddBrokenRule_WhenTargetIsNotNullOrEmpty()
+        public void Empty_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Empty(null);
+            });
+        }
+
+        [Fact]
+        public void Empty_ShouldAddBrokenRuleToContext_WhenValueIsNotEmpty()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Empty()
+                .Build();
+
+            // act
+            var result = validator.Validate("test");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Empty", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must be empty.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Empty_ShouldAddBrokenRuleToContext_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Empty()
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Empty", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must be empty.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Empty_ShouldNotAddBrokenRuleToContext_WhenValueIsEmpty()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Empty()
+                .Build();
+
+            // act
+            var result = validator.Validate("");
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+        
+        [Fact]
+        public void Empty_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Empty("test")
+                .Build();
+
+            // act
+            var result = validator.Validate("test");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void Empty_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Empty(message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("test");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void EmptyFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.EmptyFor<string>(null, null);
+            });
+        }
+
+        [Fact]
+        public void EmptyFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.EmptyFor<string>(new ValidatorBuilder<string>(), null);
+            });
+        }
+        
+        [Fact]
+        public void EmptyFor_ShouldAddBrokenRule_WhenValueIsNotEmpty()
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEmptyFor(e => e.Employer.Name)
+                .EmptyFor(e => e.Employer.Name)
                 .Build();
 
             // act
             var result = validator.Validate(new Employee 
             {
                 FirstName = "John",
-                Employer = new Company { Id = 5, Name = "Acme Inc." }
+                Employer = new Company { Id = 5, Name = "test" }
+            });
+            var brokenRule = result.BrokenRules.LastOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Empty", brokenRule.Rule);
+            Assert.Equal("Employer.Name", brokenRule.Key);
+        }
+
+        [Fact]
+        public void EmptyFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EmptyFor(e => e.Employer.Name)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            {
+                FirstName = "John",
+                Employer = new Company { Id = 5, Name = null }
+            });
+            var brokenRule = result.BrokenRules.LastOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Empty", brokenRule.Rule);
+            Assert.Equal("Employer.Name", brokenRule.Key);
+        }
+        
+        [Fact]
+        public void EmptyFor_ShouldNotAddBrokenRule_WhenTargetIsEmpty()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EmptyFor(e => e.Employer.Name)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            {
+                FirstName = "John",
+                Employer = new Company { Id = 5, Name = "" }
             });
 
             // assert
             Assert.True(result.IsValid);
             Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void EmptyFor_ShouldUseExpressionMemberName_AsKeyInBrokenRule_WhenKeyNotProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EmptyFor(e => e.Employer.Name)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            {
+                FirstName = "John",
+                Employer = new Company { Id = 5, Name = "test" }
+            });
+            var brokenRule = result.BrokenRules.LastOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Empty", brokenRule.Rule);
+            Assert.Equal("Employer.Name", brokenRule.Key);
+        }
+
+        [Fact]
+        public void EmptyFor_ShouldUseKey_AsKeyInBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EmptyFor(e => e.Employer.Name, key: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            {
+                FirstName = "John",
+                Employer = new Company { Id = 5, Name = "test" }
+            });
+            var brokenRule = result.BrokenRules.LastOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void EmptyFor_ShouldUseMessage_AsMessageInBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EmptyFor(e => e.Employer.Name, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            {
+                FirstName = "John",
+                Employer = new Company { Id = 5, Name = "test" }
+            });
+            var brokenRule = result.BrokenRules.LastOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
         }
     }
 }

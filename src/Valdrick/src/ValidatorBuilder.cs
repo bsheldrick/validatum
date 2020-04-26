@@ -9,7 +9,8 @@ namespace Valdrick
     /// <typeparam name="T">The type being validated.</typeparam>
     public sealed class ValidatorBuilder<T> : IValidatorBuilder<T>
     {
-        private readonly Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>> _delegates = new Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>>();
+        private readonly Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>> _delegates 
+            = new Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>>();
 
         private Validator<T> _validator;
 

@@ -61,12 +61,12 @@ namespace Valdrick
         }
 
         /// <summary>
-        /// 
+        /// Adds a broken rule to the context.
         /// </summary>
-        /// <param name="rule"></param>
-        /// <param name="key"></param>
-        /// <param name="error"></param>
-        public void AddBrokenRule(string rule, string key, string error)
-            => AddBrokenRules(new BrokenRule(rule, key, error));
+        /// <param name="rule">The rule.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="message">The message.</param>
+        public void AddBrokenRule(string rule, string key, string message)
+            => AddBrokenRules(new BrokenRule(rule, key, message));
     }
 }
