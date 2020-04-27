@@ -33,8 +33,7 @@ namespace Valdrick
         /// <param name="options">The validation options.</param>
         public ValidationResult Validate(T value, ValidationOptions options = null)
         {
-            var context = new ValidationContext<T>(value, options);
-            context.Label = Label;
+            var context = new ValidationContext<T>(value, Label, options);
 
             _function(context);
 

@@ -76,7 +76,7 @@ namespace Valdrick
 
             return builder
                 .When(
-                    ctx => ctx.Value != null, 
+                    ctx => !(ctx.Value is null),
                     ctx => ctx.AddBrokenRule(nameof(Null), key, message ?? "Value must be null.")
                 );
         }
@@ -128,7 +128,7 @@ namespace Valdrick
 
             return builder
                 .When(
-                    ctx => !(ctx.Value == null && other == null) && !(ctx.Value?.Equals(other) ?? false),
+                    ctx => !(ctx.Value is null && other is null) && !(ctx.Value?.Equals(other) ?? false),
                     ctx => ctx.AddBrokenRule(nameof(Equal), key, message ?? $"Value must equal '{other?.ToString() ?? "null"}'.")
                 );
         }
@@ -180,7 +180,7 @@ namespace Valdrick
 
             return builder
                 .When(
-                    ctx => (ctx.Value == null && other == null) || (ctx.Value?.Equals(other) ?? false),
+                    ctx => (ctx.Value is null && other is null) || (ctx.Value?.Equals(other) ?? false),
                     ctx => ctx.AddBrokenRule(nameof(NotEqual), key, message ?? $"Value must not equal '{other?.ToString() ?? "null"}'.")
                 );
         }

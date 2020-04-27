@@ -14,10 +14,12 @@ namespace Valdrick
         /// Creates a new instance of ValidationContext
         /// </summary>
         /// <param name="value">The value to validate.</param>
+        /// <param name="label">The label.</param>
         /// <param name="options">The validation options.</param>   
-        public ValidationContext(T value, ValidationOptions options = null)
+        public ValidationContext(T value, string label = null, ValidationOptions options = null)
         {
             Value = value;
+            Label = label;
             Options = options ?? ValidationOptions.Default;
         }
 
@@ -44,7 +46,7 @@ namespace Valdrick
         /// <summary>
         /// Gets the label.
         /// </summary>
-        public string Label { get; internal set; }
+        public string Label { get; }
 
         /// <summary>
         /// Indicates whether the validation context can continue processing.

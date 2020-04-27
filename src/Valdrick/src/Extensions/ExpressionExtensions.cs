@@ -52,7 +52,7 @@ namespace Valdrick
 
             var parts = new List<string>();
 
-            while (expression != null)
+            while (!(expression is null))
             {
                 parts.Add(expression.Member.Name);
                 expression = expression.Expression as MemberExpression;

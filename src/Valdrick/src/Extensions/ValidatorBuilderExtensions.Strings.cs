@@ -126,7 +126,7 @@ namespace Valdrick
 
             return builder
                 .When(
-                    ctx => ctx.Value == null || !System.Text.RegularExpressions.Regex.IsMatch(ctx.Value, pattern),
+                    ctx => ctx.Value is null || !System.Text.RegularExpressions.Regex.IsMatch(ctx.Value, pattern),
                     ctx => ctx.AddBrokenRule(nameof(Regex), key, message ?? "Value must match pattern.")
                 );
         }
