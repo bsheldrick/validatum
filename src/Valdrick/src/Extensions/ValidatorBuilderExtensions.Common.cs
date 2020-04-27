@@ -180,7 +180,7 @@ namespace Valdrick
 
             return builder
                 .When(
-                    ctx => ctx.Value?.Equals(other) ?? false,
+                    ctx => (ctx.Value == null && other == null) || (ctx.Value?.Equals(other) ?? false),
                     ctx => ctx.AddBrokenRule(nameof(NotEqual), key, message ?? $"Value must not equal '{other?.ToString() ?? "null"}'.")
                 );
         }

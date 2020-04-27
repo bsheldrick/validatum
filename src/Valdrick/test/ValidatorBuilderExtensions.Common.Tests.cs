@@ -704,7 +704,7 @@ namespace Valdrick.Tests
             var result = validator.Validate(null);
 
             // assert
-            Assert.Empty(result.BrokenRules);
+            Assert.NotEmpty(result.BrokenRules);
         }
 
         [Fact]
@@ -803,7 +803,7 @@ namespace Valdrick.Tests
             var result = validator.Validate(new Employee());
 
             // assert
-            Assert.Empty(result.BrokenRules);
+            Assert.NotEmpty(result.BrokenRules);
         }
 
         [Fact]
