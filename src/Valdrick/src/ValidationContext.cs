@@ -67,6 +67,6 @@ namespace Valdrick
         /// <param name="key">The key.</param>
         /// <param name="message">The message.</param>
         public void AddBrokenRule(string rule, string key, string message)
-            => AddBrokenRules(new BrokenRule(rule, key, message));
+            => AddBrokenRules(new BrokenRule(rule, key ?? Label, message));
     }
 }

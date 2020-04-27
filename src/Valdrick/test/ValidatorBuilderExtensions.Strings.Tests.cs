@@ -254,7 +254,7 @@ namespace Valdrick.Tests
         }
 
         [Fact]
-        public void Empty_ShouldAddBrokenRuleToContext_WhenValueIsNotEmpty()
+        public void Empty_ShouldAddBrokenRule_WhenValueIsNotEmpty()
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
@@ -273,7 +273,7 @@ namespace Valdrick.Tests
         }
 
         [Fact]
-        public void Empty_ShouldAddBrokenRuleToContext_WhenValueIsNull()
+        public void Empty_ShouldAddBrokenRule_WhenValueIsNull()
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
@@ -292,7 +292,7 @@ namespace Valdrick.Tests
         }
 
         [Fact]
-        public void Empty_ShouldNotAddBrokenRuleToContext_WhenValueIsEmpty()
+        public void Empty_ShouldNotAddBrokenRule_WhenValueIsEmpty()
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
@@ -477,6 +477,239 @@ namespace Valdrick.Tests
                 Employer = new Company { Id = 5, Name = "test" }
             });
             var brokenRule = result.BrokenRules.LastOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Regex_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Regex(null, null);
+            });
+        }
+
+        [Fact]
+        public void Regex_ThrowsException_WhenPatternIsNull()
+        {
+            Assert.Throws<ArgumentException>("pattern", () =>
+            {
+                ValidatorBuilderExtensions.Regex(new ValidatorBuilder<string>(), null);
+            });
+        }
+
+        [Fact]
+        public void Regex_ThrowsException_WhenPatternIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("pattern", () =>
+            {
+                ValidatorBuilderExtensions.Regex(new ValidatorBuilder<string>(), string.Empty);
+            });
+        }
+
+        [Fact]
+        public void Regex_ShouldAddBrokenRule_WhenValueDoesNotMatchPattern()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Regex("a{1,4}")
+                .Build();
+
+            // act
+            var result = validator.Validate("1234");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Regex", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must match pattern.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Regex_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Regex("a{1,4}")
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Regex", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must match pattern.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Regex_ShouldNotAddBrokenRule_WhenValueDoesMatchPattern()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Regex("a{1,4}")
+                .Build();
+
+            // act
+            var result = validator.Validate("abcd");
+
+            // assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public void Regex_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Regex("a{1,4}", "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("test");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void Regex_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Regex("a{1,4}", message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("test");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RegexFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.RegexFor<string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void RegexFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.RegexFor<string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void RegexFor_ThrowsException_WhenPatternIsNull()
+        {
+            Assert.Throws<ArgumentException>("pattern", () =>
+            {
+                ValidatorBuilderExtensions.RegexFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void RegexFor_ThrowsException_WhenPatternIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("pattern", () =>
+            {
+                ValidatorBuilderExtensions.RegexFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
+            });
+        }
+
+        [Fact]
+        public void RegexFor_ShouldAddBrokenRule_WhenValueDoesNotMatchPattern()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .RegexFor(e => e.FirstName, "a{1,4}")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "John" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Regex", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must match pattern.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RegexFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .RegexFor(e => e.FirstName, "a{1,4}")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { LastName = "Simpson" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Regex", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must match pattern.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RegexFor_ShouldNotAddBrokenRule_WhenValueDoesMatchPattern()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .RegexFor(e => e.FirstName, "a{1,4}")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Anna" });
+
+            // assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public void RegexFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .RegexFor(e => e.FirstName, "a{1,4}", "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "John" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void RegexFor_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .RegexFor(e => e.FirstName, "a{1,4}", message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "John" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
 
             // assert
             Assert.Equal("test", brokenRule.Message);
