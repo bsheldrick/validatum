@@ -1,4 +1,4 @@
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// A function that processes validation logic.

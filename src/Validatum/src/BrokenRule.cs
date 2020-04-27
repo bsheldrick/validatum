@@ -1,6 +1,6 @@
 using System;
 
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// Represents a broken validation rule.

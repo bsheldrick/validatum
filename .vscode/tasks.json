@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/src/Valdrick/test/Valdrick.Tests.csproj",
+        "${workspaceFolder}/src/Validatum/test/Validatum.Tests.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -23,7 +23,7 @@
       "type": "process",
       "args": [
         "test",
-        "${workspaceFolder}/src/Valdrick/test/Valdrick.Tests.csproj",
+        "${workspaceFolder}/src/Validatum/test/Validatum.Tests.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],

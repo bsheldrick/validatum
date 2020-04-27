@@ -1,6 +1,6 @@
 using System;
 
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// A class that can validate values of a specified type.

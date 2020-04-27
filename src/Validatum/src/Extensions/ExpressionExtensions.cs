@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// Extension methods for Expression functions.

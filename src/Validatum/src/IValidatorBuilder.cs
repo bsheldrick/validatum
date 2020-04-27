@@ -1,6 +1,6 @@
 using System;
 
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// A builder for constructing validation delegate chains.

@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Valdrick/test/bin/Debug/netcoreapp3.1/Valdrick.Tests.dll",
+            "program": "${workspaceFolder}/src/Validatum/test/bin/Debug/netcoreapp3.1/Validatum.Tests.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Valdrick/test",
+            "cwd": "${workspaceFolder}/src/Validatum/test",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false

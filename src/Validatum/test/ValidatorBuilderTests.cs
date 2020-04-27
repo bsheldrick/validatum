@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace Valdrick.Tests
+namespace Validatum.Tests
 {
     public class ValidatorBuilderTests
     {

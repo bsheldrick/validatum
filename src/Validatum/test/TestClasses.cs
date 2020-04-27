@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Valdrick.Tests
+namespace Validatum.Tests
 {
     public class Employee
     {

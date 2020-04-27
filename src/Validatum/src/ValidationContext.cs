@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// Encapsulates validation specific data.

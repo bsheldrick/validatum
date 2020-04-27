@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Valdrick.Tests
+namespace Validatum.Tests
 {
     public class ValidatorBuilderStringExtensionsTests
     {

@@ -1,4 +1,4 @@
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// Encapsulates options used for validation.

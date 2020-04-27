@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// Extension methods for adding validation delegates.

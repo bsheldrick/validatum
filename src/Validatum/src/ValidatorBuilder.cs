@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// Default implementation for <see cref="IValidatorBuilder{T}"/>.

@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
-      run: dotnet restore src/Valdrick/test/Valdrick.Tests.csproj
+      run: dotnet restore src/Validatum/test/Validatum.Tests.csproj
     - name: Build Pipelines
-      run: dotnet build src/Valdrick/test/Valdrick.Tests.csproj --configuration Release --no-restore
+      run: dotnet build src/Validatum/test/Validatum.Tests.csproj --configuration Release --no-restore
     - name: Test Pipelines
-      run: dotnet test src/Valdrick/test/Valdrick.Tests.csproj --no-restore --verbosity normal
+      run: dotnet test src/Validatum/test/Validatum.Tests.csproj --no-restore --verbosity normal

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Valdrick
+namespace Validatum
 {
     /// <summary>
     /// Encapsulates data collected during validation.
