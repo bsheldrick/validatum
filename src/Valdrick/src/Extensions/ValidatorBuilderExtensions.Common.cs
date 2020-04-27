@@ -25,7 +25,7 @@ namespace Valdrick
             return builder
                 .When(
                     ctx => ctx.Value is null, 
-                    ctx => ctx.AddBrokenRules(new BrokenRule(nameof(NotNull), key ?? ctx.Label, message ?? "Value cannot be null."))
+                    ctx => ctx.AddBrokenRule(nameof(NotNull), key, message ?? "Value cannot be null.")
                 );
         }
 
@@ -77,7 +77,7 @@ namespace Valdrick
             return builder
                 .When(
                     ctx => ctx.Value != null, 
-                    ctx => ctx.AddBrokenRules(new BrokenRule(nameof(Null), key ?? ctx.Label, message ?? "Value must be null."))
+                    ctx => ctx.AddBrokenRule(nameof(Null), key, message ?? "Value must be null.")
                 );
         }
 
@@ -110,6 +110,110 @@ namespace Valdrick
             key = key ?? selector.GetPropertyPath();
 
             return builder.For(selector, p => p.Null(key, message));
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is equal to a specified value.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="other">The value to test equality.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> Equal<T>(this IValidatorBuilder<T> builder, T other, string key = null, string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            return builder
+                .When(
+                    ctx => !(ctx.Value == null && other == null) && !(ctx.Value?.Equals(other) ?? false),
+                    ctx => ctx.AddBrokenRule(nameof(Equal), key, message ?? $"Value must equal '{other?.ToString() ?? "null"}'.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is equal to a specified value for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="other">The value to test equality.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        /// <typeparam name="T">The source type.</typeparam>
+        /// <typeparam name="P">The target type.</typeparam>
+        public static IValidatorBuilder<T> EqualFor<T, P>(this IValidatorBuilder<T> builder, 
+            Expression<Func<T, P>> selector,
+            P other,
+            string key = null,
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            key = key ?? selector.GetPropertyPath();
+
+            return builder.For(selector, p => p.Equal(other, key, message));
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is not equal to a specified value.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="other">The value to test equality.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> NotEqual<T>(this IValidatorBuilder<T> builder, T other, string key = null, string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            return builder
+                .When(
+                    ctx => ctx.Value?.Equals(other) ?? false,
+                    ctx => ctx.AddBrokenRule(nameof(NotEqual), key, message ?? $"Value must not equal '{other?.ToString() ?? "null"}'.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is not equal to a specified value for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="other">The value to test equality.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        /// <typeparam name="T">The source type.</typeparam>
+        /// <typeparam name="P">The target type.</typeparam>
+        public static IValidatorBuilder<T> NotEqualFor<T, P>(this IValidatorBuilder<T> builder, 
+            Expression<Func<T, P>> selector,
+            P other,
+            string key = null,
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            key = key ?? selector.GetPropertyPath();
+
+            return builder.For(selector, p => p.NotEqual(other, key, message));
         }
     }
 }
