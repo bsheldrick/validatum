@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Validatum
 {
@@ -20,7 +21,8 @@ namespace Validatum
         {
             Value = value;
             Label = label;
-            Options = options ?? ValidationOptions.Default;
+            Options = options ?? new ValidationOptions();
+            Options.Lock();
         }
 
         /// <summary>
@@ -69,6 +71,18 @@ namespace Validatum
         /// <param name="key">The key.</param>
         /// <param name="message">The message.</param>
         public void AddBrokenRule(string rule, string key, string message)
-            => AddBrokenRules(new BrokenRule(rule, key ?? Label, message));
+            => _brokenRules.Add(new BrokenRule(rule, key ?? Label, message));
+
+        internal void AggregateBrokenRules(string message)
+        {
+            if (!IsValid)
+            {
+                var rules = string.Join(",", _brokenRules.Select(r => r.Rule));
+
+                _brokenRules.Clear();
+
+                AddBrokenRule(rules, Label, message);               
+            }
+        }
     }
 }
