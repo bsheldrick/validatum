@@ -191,5 +191,25 @@ namespace Validatum
 
             return builder.For(selector, p => p.Validator(validator));
         }
+
+        /// <summary>
+        /// Aggregate broken rules into a single broken rule with the specified message.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="message">The message.</param>
+        public static IValidatorBuilder<T> Message<T>(this IValidatorBuilder<T> builder, string message)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentException("message", nameof(message));
+            }
+
+            return builder.WhenInvalid(ctx => ctx.AggregateBrokenRules(message));
+        }
     }
 }

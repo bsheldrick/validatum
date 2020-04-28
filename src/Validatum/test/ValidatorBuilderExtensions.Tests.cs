@@ -143,7 +143,7 @@ namespace Validatum.Tests
 
             // act
             var validator = builder.Build();
-            var options = new ValidationOptions(true);
+            var options = new ValidationOptions { StopWhenInvalid = true };
             validator.Validate(employee, options);
 
             // assert
@@ -190,7 +190,8 @@ namespace Validatum.Tests
             var validator = builder.Build();
 
             // act
-            var result = validator.Validate(employee, new ValidationOptions(addBrokenRuleForException: false));
+            var options = new ValidationOptions { AddBrokenRuleForException = false };
+            var result = validator.Validate(employee, options);
             var brokenRule = result.BrokenRules.FirstOrDefault();
             
             // assert
@@ -520,7 +521,11 @@ namespace Validatum.Tests
                 .Build();
 
             // act
-            var options = new ValidationOptions(true, true);
+            var options = new ValidationOptions
+            {
+                AddBrokenRuleForException = true,
+                StopWhenInvalid = true
+            };
             validator2.Validate("test", options);
 
             // assert
@@ -605,6 +610,70 @@ namespace Validatum.Tests
             // assert
             Assert.True(validator1Called);
             Assert.True(validator2Called);
+        }
+
+        [Fact]
+        public void Message_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Message<string>(null, null);
+            });
+        }
+
+        [Fact]
+        public void Message_ThrowsException_WhenMessageIsNull()
+        {
+            Assert.Throws<ArgumentException>("message", () =>
+            {
+                ValidatorBuilderExtensions.Message<string>(new ValidatorBuilder<string>(), null);
+            });
+        }
+
+        [Fact]
+        public void Message_ThrowsException_WhenMessageIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("message", () =>
+            {
+                ValidatorBuilderExtensions.Message<string>(new ValidatorBuilder<string>(), "");
+            });
+        }
+
+        [Fact]
+        public void Message_ShouldCreateOneBrokenRule_WithRulesJoined_LabelAsKey_AndProvidedMessage()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .With(ctx => ctx.AddBrokenRule("R1", "Key1", "Message1"))
+                .With(ctx => ctx.AddBrokenRule("R2", "Key2", "Message2"))
+                .Message("Test message.")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal(1, result.BrokenRules.Count);
+            Assert.NotNull(brokenRule);
+            Assert.Equal("R1,R2", brokenRule.Rule);
+            Assert.Equal("Employee", brokenRule.Key);
+            Assert.Equal("Test message.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Message_ShouldNotCreateBrokenRule_WhenNoBrokenRulesInContext()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Message("Test message.")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+
+            // assert
+            Assert.Empty(result.BrokenRules);
         }
     }
 }
