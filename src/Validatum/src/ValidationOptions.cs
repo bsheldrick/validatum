@@ -8,6 +8,7 @@ namespace Validatum
         private bool _locked = false;
         private SetOnce<bool> _stopWhenInvalid = new SetOnce<bool>(false);
         private SetOnce<bool> _addBrokenRuleForException = new SetOnce<bool>(true);
+        private SetOnce<bool> _throwWhenInvalid = new SetOnce<bool>(false);
 
         /// <summary>
         /// Indicates to stop validation when the first invalid rule occurs.
@@ -35,6 +36,21 @@ namespace Validatum
                 if (!_locked)
                 {
                     _addBrokenRuleForException.Value = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Indicates to throw <see cref="ValidationException"/> when validation fails.
+        /// </summary>
+        public bool ThrowWhenInvalid
+        {
+            get => _throwWhenInvalid.Value;
+            set
+            {
+                if (!_locked)
+                {
+                    _throwWhenInvalid.Value = value;
                 }
             }
         }

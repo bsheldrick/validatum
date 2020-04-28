@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xunit;
 
 namespace Validatum.Tests
@@ -32,7 +33,7 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void Build_ShouldPopulateLabelOnValidator()
+        public void Build_ShouldSetLabelOnValidator_WhenLabelProvided()
         {
             // arrange
             var builder = new ValidatorBuilder<Employee>();
@@ -94,6 +95,71 @@ namespace Validatum.Tests
 
             // assert
             Assert.Equal(2, callCount);
-        }        
+        }
+
+        [Fact]
+        public void With_ShouldThrowValidationException_WhenThrowWhenInvalidIsTrue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .With((ctx, next) => 
+                {
+                    ctx.AddBrokenRule("test1", "test1", "test1");
+                    next(ctx);
+                })
+                .With((ctx, next) => 
+                {
+                    ctx.AddBrokenRule("test2", "test2", "test2");
+                    next(ctx);
+                })
+                .Build();
+
+            // assert
+            Assert.Throws<ValidationException>(() => 
+            {
+                try
+                {
+                    // act
+                    validator.Validate("test", new ValidationOptions { ThrowWhenInvalid = true });
+                }
+                catch (ValidationException ex)
+                {
+                    Assert.Equal(2, ex.BrokenRules.Count());
+                    throw ex;
+                }
+            });
+        }
+
+        [Fact]
+        public void With_ShouldThrowValidationException_WhenUnhandledExceptionThrown()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .With((ctx, next) => 
+                {
+                    ctx.AddBrokenRule("test", "test", "test");
+                    next(ctx);
+                })
+                .With((ctx, next) => 
+                {
+                    throw new InvalidOperationException();
+                })
+                .Build();
+
+            // assert
+            Assert.Throws<ValidationException>(() => 
+            {
+                try
+                {
+                    // act
+                    validator.Validate("test");
+                }
+                catch (ValidationException ex)
+                {
+                    Assert.IsType<InvalidOperationException>(ex.InnerException);
+                    throw ex;
+                }
+            });
+        }
     }
 }

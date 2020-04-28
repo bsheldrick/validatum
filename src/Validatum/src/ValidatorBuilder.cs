@@ -12,6 +12,23 @@ namespace Validatum
         private readonly Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>> _delegates 
             = new Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>>();
 
+        private static readonly Func<ValidatorDelegate<T>, ValidatorDelegate<T>> Run = next => ctx => 
+        {
+            try
+            {
+                next(ctx);
+
+                if (!ctx.IsValid && ctx.Options.ThrowWhenInvalid)
+                {
+                    throw new ValidationException(ctx.BrokenRules);
+                }
+            }
+            catch (Exception ex) when (!(ex is ValidationException))
+            {
+                throw new ValidationException(ex.Message, ex);
+            }
+        };
+
         private Validator<T> _validator;
 
         /// <inheritdoc/>
@@ -26,6 +43,8 @@ namespace Validatum
                     var next = _delegates.Pop();
                     validator = next(validator);
                 }
+
+                validator = Run(validator);
 
                 _validator = new Validator<T>(validator, label ?? typeof(T).Name);
             }
