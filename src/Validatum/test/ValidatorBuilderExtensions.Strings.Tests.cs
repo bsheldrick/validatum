@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Validatum.Tests
@@ -595,6 +596,21 @@ namespace Validatum.Tests
         }
 
         [Fact]
+        public void Regex_ShouldBeCallable_WithRegexOptions()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Regex("a{1,4}", RegexOptions.IgnoreCase)
+                .Build();
+
+            // act
+            var result = validator.Validate("Absolutely.");
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
         public void RegexFor_ThrowsException_WhenBuilderIsNull()
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
@@ -713,6 +729,21 @@ namespace Validatum.Tests
 
             // assert
             Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RegexFor_ShouldBeCallable_WithRegexOptions()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .RegexFor(e => e.FirstName, "a{1,4}", RegexOptions.IgnoreCase)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Alex" });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
         }
     }
 }
