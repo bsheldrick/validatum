@@ -978,5 +978,238 @@ namespace Validatum.Tests
             // assert
             Assert.Equal("test", brokenRule.Message);
         }
+
+        [Fact]
+        public void EndsWith_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.EndsWith(null, null);
+            });
+        }
+
+        [Fact]
+        public void EndsWith_ThrowsException_WhenValueIsNull()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.EndsWith(new ValidatorBuilder<string>(), null);
+            });
+        }
+
+        [Fact]
+        public void EndsWith_ThrowsException_WhenValueIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.EndsWith(new ValidatorBuilder<string>(), string.Empty);
+            });
+        }
+
+        [Fact]
+        public void EndsWith_ShouldAddBrokenRule_WhenValueDoesNotEndWithValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .EndsWith("star")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("EndsWith", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must end with 'star'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void EndsWith_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .EndsWith("star")
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("EndsWith", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must end with 'star'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void EndsWith_ShouldNotAddBrokenRule_WhenValueDoesEndWithValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .EndsWith("tar")
+                .Build();
+
+            // act
+            var result = validator.Validate("star");
+
+            // assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public void EndsWith_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .EndsWith("star", "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void EndsWith_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .EndsWith("star", message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void EndsWithFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.EndsWithFor<string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void EndsWithFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.EndsWithFor<string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void EndsWithFor_ThrowsException_WhenValueIsNull()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.EndsWithFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void EndsWithFor_ThrowsException_WhenValueIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.EndsWithFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
+            });
+        }
+
+        [Fact]
+        public void EndsWithFor_ShouldAddBrokenRule_WhenValueDoesNotEndWithValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EndsWithFor(e => e.LastName, "Data")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { LastName = "Picard" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("EndsWith", brokenRule.Rule);
+            Assert.Equal("LastName", brokenRule.Key);
+            Assert.Equal("Value must end with 'Data'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void EndsWithFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EndsWithFor(e => e.LastName, "Data")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("EndsWith", brokenRule.Rule);
+            Assert.Equal("LastName", brokenRule.Key);
+            Assert.Equal("Value must end with 'Data'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void EndsWithFor_ShouldNotAddBrokenRule_WhenValueDoesEndWithValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EndsWithFor(e => e.LastName, "man")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { LastName = "Dataman" });
+
+            // assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public void EndsWithFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EndsWithFor(e => e.LastName, "Pica", "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void EndsWithFor_ShouldPassMessageToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .EndsWithFor(e => e.LastName, "Pica", message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
     }
 }
