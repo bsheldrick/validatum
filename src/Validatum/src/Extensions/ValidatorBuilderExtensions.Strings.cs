@@ -230,5 +230,65 @@ namespace Validatum
 
             return builder.For(selector, p => p.Regex(pattern, options, key, message));
         }
+
+        /// <summary>
+        /// Adds a validator to ensure the value starts with the specified value.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="value">The value the string starts with.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<string> StartsWith(this IValidatorBuilder<string> builder, string value, string key = null, string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("Cannot be null or empty.", nameof(value));
+            }
+
+            return builder
+                .When(
+                    ctx => !ctx.Value?.StartsWith(value) ?? true,
+                    ctx => ctx.AddBrokenRule(nameof(StartsWith), key, message ?? $"Value must start with '{value}'.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is an empty string for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="value">The value the string starts with.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> StartsWithFor<T>(this IValidatorBuilder<T> builder, 
+            Expression<Func<T, string>> selector,
+            string value,
+            string key = null,
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("Cannot be null or empty.", nameof(value));
+            }
+
+            key = key ?? selector.GetPropertyPath();
+
+            return builder.For<T, string>(selector, p => p.StartsWith(value, key, message));
+        }
     }
 }

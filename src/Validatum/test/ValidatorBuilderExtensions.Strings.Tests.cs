@@ -745,5 +745,238 @@ namespace Validatum.Tests
             // assert
             Assert.Empty(result.BrokenRules);
         }
+
+        [Fact]
+        public void StartsWith_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.StartsWith(null, null);
+            });
+        }
+
+        [Fact]
+        public void StartsWith_ThrowsException_WhenValueIsNull()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.StartsWith(new ValidatorBuilder<string>(), null);
+            });
+        }
+
+        [Fact]
+        public void StartsWith_ThrowsException_WhenValueIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.StartsWith(new ValidatorBuilder<string>(), string.Empty);
+            });
+        }
+
+        [Fact]
+        public void StartsWith_ShouldAddBrokenRule_WhenValueDoesNotStartWithValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .StartsWith("star")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("StartsWith", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must start with 'star'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void StartsWith_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .StartsWith("star")
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("StartsWith", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must start with 'star'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void StartsWith_ShouldNotAddBrokenRule_WhenValueDoesStartWithValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .StartsWith("star")
+                .Build();
+
+            // act
+            var result = validator.Validate("start");
+
+            // assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public void StartsWith_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .StartsWith("star", "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void StartsWith_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .StartsWith("star", message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void StartsWithFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.StartsWithFor<string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void StartsWithFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.StartsWithFor<string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void StartsWithFor_ThrowsException_WhenValueIsNull()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.StartsWithFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void StartsWithFor_ThrowsException_WhenValueIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.StartsWithFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
+            });
+        }
+
+        [Fact]
+        public void StartsWithFor_ShouldAddBrokenRule_WhenValueDoesNotStartWithValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .StartsWithFor(e => e.LastName, "Data")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { LastName = "Picard" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("StartsWith", brokenRule.Rule);
+            Assert.Equal("LastName", brokenRule.Key);
+            Assert.Equal("Value must start with 'Data'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void StartsWithFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .StartsWithFor(e => e.LastName, "Data")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("StartsWith", brokenRule.Rule);
+            Assert.Equal("LastName", brokenRule.Key);
+            Assert.Equal("Value must start with 'Data'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void StartsWithFor_ShouldNotAddBrokenRule_WhenValueDoesStartWithValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .StartsWithFor(e => e.LastName, "Data")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { LastName = "Dataman" });
+
+            // assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public void StartsWithFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .StartsWithFor(e => e.LastName, "Pica", "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void StartsWithFor_ShouldPassMessageToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .StartsWithFor(e => e.LastName, "Pica", message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
     }
 }
