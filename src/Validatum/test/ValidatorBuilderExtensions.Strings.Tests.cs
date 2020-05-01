@@ -1211,5 +1211,238 @@ namespace Validatum.Tests
             // assert
             Assert.Equal("test", brokenRule.Message);
         }
+
+        [Fact]
+        public void Contains_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Contains(null, null);
+            });
+        }
+
+        [Fact]
+        public void Contains_ThrowsException_WhenValueIsNull()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.Contains(new ValidatorBuilder<string>(), null);
+            });
+        }
+
+        [Fact]
+        public void Contains_ThrowsException_WhenValueIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.Contains(new ValidatorBuilder<string>(), string.Empty);
+            });
+        }
+
+        [Fact]
+        public void Contains_ShouldAddBrokenRule_WhenValueDoesNotContainValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Contains("star")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Contains", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must contain 'star'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Contains_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Contains("star")
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Contains", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must contain 'star'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Contains_ShouldNotAddBrokenRule_WhenValueDoesContainValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Contains("gaze")
+                .Build();
+
+            // act
+            var result = validator.Validate("stargazer");
+
+            // assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public void Contains_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Contains("star", "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void Contains_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Contains("star", message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void ContainsFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.ContainsFor<string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void ContainsFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.ContainsFor<string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void ContainsFor_ThrowsException_WhenValueIsNull()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.ContainsFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void ContainsFor_ThrowsException_WhenValueIsEmpty()
+        {
+            Assert.Throws<ArgumentException>("value", () =>
+            {
+                ValidatorBuilderExtensions.ContainsFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
+            });
+        }
+
+        [Fact]
+        public void ContainsFor_ShouldAddBrokenRule_WhenValueDoesNotContainValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .ContainsFor(e => e.LastName, "Data")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { LastName = "Picard" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Contains", brokenRule.Rule);
+            Assert.Equal("LastName", brokenRule.Key);
+            Assert.Equal("Value must contain 'Data'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void ContainsFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .ContainsFor(e => e.LastName, "Data")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Contains", brokenRule.Rule);
+            Assert.Equal("LastName", brokenRule.Key);
+            Assert.Equal("Value must contain 'Data'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void ContainsFor_ShouldNotAddBrokenRule_WhenValueDoesContainValue()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .ContainsFor(e => e.LastName, "man")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { LastName = "salamander" });
+
+            // assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public void ContainsFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .ContainsFor(e => e.LastName, "Pica", "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void ContainsFor_ShouldPassMessageToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .ContainsFor(e => e.LastName, "Pica", message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
     }
 }

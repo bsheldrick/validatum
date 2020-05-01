@@ -350,5 +350,65 @@ namespace Validatum
 
             return builder.For<T, string>(selector, p => p.EndsWith(value, key, message));
         }
+
+        /// <summary>
+        /// Adds a validator to ensure the value contains the specified value.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="value">The value the string contains.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<string> Contains(this IValidatorBuilder<string> builder, string value, string key = null, string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("Cannot be null or empty.", nameof(value));
+            }
+
+            return builder
+                .When(
+                    ctx => !ctx.Value?.Contains(value) ?? true,
+                    ctx => ctx.AddBrokenRule(nameof(Contains), key, message ?? $"Value must contain '{value}'.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value contains the specified for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="value">The value the string contains.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> ContainsFor<T>(this IValidatorBuilder<T> builder, 
+            Expression<Func<T, string>> selector,
+            string value,
+            string key = null,
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("Cannot be null or empty.", nameof(value));
+            }
+
+            key = key ?? selector.GetPropertyPath();
+
+            return builder.For<T, string>(selector, p => p.Contains(value, key, message));
+        }
     }
 }
