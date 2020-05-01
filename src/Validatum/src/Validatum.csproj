@@ -6,6 +6,20 @@
     <DocumentationFile>bin\Validatum.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Validatum</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Brad Sheldrick</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>Validation;Fluent;Builder</PackageTags>
+    <Description>A simple and fluent validation builder.</Description>
+    <Copyright>Brad Sheldrick</Copyright>
+    <PackageProjectUrl>https://github.com/bsheldrick/validatum</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bsheldrick/validatum</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>Validatum.Tests</_Parameter1>
