@@ -467,5 +467,240 @@ namespace Validatum.Tests
             // assert
             Assert.Equal("test", brokenRule.Message);
         }
+
+        [Fact]
+        public void LessThan_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.LessThan<string>(null, null);
+            });
+        }
+
+        [Fact]
+        public void LessThan_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .LessThan("a")
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("LessThan", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must be less than 'a'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void LessThan_ShouldAddBrokenRule_WhenValueIsNotLessThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .LessThan(5)
+                .Build();
+
+            // act
+            var result = validator.Validate(6);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("LessThan", brokenRule.Rule);
+            Assert.Equal("Int32", brokenRule.Key);
+            Assert.Equal("Value must be less than '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void LessThan_ShouldAddBrokenRule_WhenValueIsEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .LessThan(5)
+                .Build();
+
+            // act
+            var result = validator.Validate(5);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("LessThan", brokenRule.Rule);
+            Assert.Equal("Int32", brokenRule.Key);
+            Assert.Equal("Value must be less than '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void LessThan_ShouldNotAddBrokenRule_WhenValueIsLessThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .LessThan(5)
+                .Build();
+
+            // act
+            var result = validator.Validate(4);
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void LessThan_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .LessThan(5, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(6);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void LessThan_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .LessThan(5, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(6);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void LessThanFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.LessThanFor<string, string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void LessThanFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.LessThanFor<string, string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void LessThanFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .LessThanFor(e => e.FirstName, "a")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("LessThan", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must be less than 'a'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void LessThanFor_ShouldAddBrokenRule_WhenValueIsNotLessThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .LessThanFor(e => e.Id, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 6 });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("LessThan", brokenRule.Rule);
+            Assert.Equal("Id", brokenRule.Key);
+            Assert.Equal("Value must be less than '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void LessThanFor_ShouldAddBrokenRule_WhenValueIsEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .LessThanFor(e => e.Id, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 5 });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("LessThan", brokenRule.Rule);
+            Assert.Equal("Id", brokenRule.Key);
+            Assert.Equal("Value must be less than '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void LessThanFor_ShouldNotAddBrokenRule_WhenValueIsLessThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .LessThanFor(e => e.Id, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 4 });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void LessThanFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .LessThanFor(e => e.Id, -1, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void LessThanFor_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .LessThanFor(e => e.Id, -1, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
     }
 }
