@@ -240,5 +240,232 @@ namespace Validatum.Tests
             // assert
             Assert.Equal("test", brokenRule.Message);
         }
+
+        [Fact]
+        public void GreaterThanOrEqual_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.GreaterThanOrEqual<string>(null, null);
+            });
+        }
+
+        [Fact]
+        public void GreaterThanOrEqual_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .GreaterThanOrEqual("a")
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("GreaterThanOrEqual", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must be greater than or equal to 'a'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqual_ShouldAddBrokenRule_WhenValueIsNotGreaterThanOrEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .GreaterThanOrEqual(5)
+                .Build();
+
+            // act
+            var result = validator.Validate(4);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("GreaterThanOrEqual", brokenRule.Rule);
+            Assert.Equal("Int32", brokenRule.Key);
+            Assert.Equal("Value must be greater than or equal to '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqual_ShouldNotAddBrokenRule_WhenValueIsEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .GreaterThanOrEqual(5)
+                .Build();
+
+            // act
+            var result = validator.Validate(5);
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqual_ShouldNotAddBrokenRule_WhenValueIsGreaterThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .GreaterThanOrEqual(5)
+                .Build();
+
+            // act
+            var result = validator.Validate(6);
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqual_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .GreaterThanOrEqual(5, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(4);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqual_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .GreaterThanOrEqual(5, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(4);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqualFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.GreaterThanOrEqualFor<string, string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void GreaterThanOrEqualFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.GreaterThanOrEqualFor<string, string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void GreaterThanOrEqualFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .GreaterThanOrEqualFor(e => e.FirstName, "a")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("GreaterThanOrEqual", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must be greater than or equal to 'a'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqualFor_ShouldAddBrokenRule_WhenValueIsNotGreaterThanOrEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .GreaterThanOrEqualFor(e => e.Id, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 4 });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("GreaterThanOrEqual", brokenRule.Rule);
+            Assert.Equal("Id", brokenRule.Key);
+            Assert.Equal("Value must be greater than or equal to '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqualFor_ShouldNotAddBrokenRule_WhenValueIsEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .GreaterThanOrEqualFor(e => e.Id, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 5 });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqualFor_ShouldNotAddBrokenRule_WhenValueIsGreaterThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .GreaterThanOrEqualFor(e => e.Id, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 6 });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqualFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .GreaterThanOrEqualFor(e => e.Id, 5, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void GreaterThanOrEqualFor_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .GreaterThanOrEqualFor(e => e.Id, 5, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
     }
 }
