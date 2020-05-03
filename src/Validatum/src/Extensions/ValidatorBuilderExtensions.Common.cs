@@ -120,6 +120,7 @@ namespace Validatum
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
         public static IValidatorBuilder<T> Equal<T>(this IValidatorBuilder<T> builder, T other, string key = null, string message = null)
+            where T : IEquatable<T>
         {
             if (builder is null)
             {
@@ -148,6 +149,7 @@ namespace Validatum
             P other,
             string key = null,
             string message = null)
+            where P : IEquatable<P>
         {
             if (builder is null)
             {
@@ -172,6 +174,7 @@ namespace Validatum
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
         public static IValidatorBuilder<T> NotEqual<T>(this IValidatorBuilder<T> builder, T other, string key = null, string message = null)
+            where T : IEquatable<T>
         {
             if (builder is null)
             {
@@ -200,6 +203,7 @@ namespace Validatum
             P other,
             string key = null,
             string message = null)
+            where P : IEquatable<P>
         {
             if (builder is null)
             {
