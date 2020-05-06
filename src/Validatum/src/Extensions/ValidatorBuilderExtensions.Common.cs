@@ -3,9 +3,6 @@ using System.Linq.Expressions;
 
 namespace Validatum
 {
-    /// <summary>
-    /// Extension methods for adding validation delegates.
-    /// </summary>
     public static partial class ValidatorBuilderExtensions
     {
         /// <summary>
@@ -38,7 +35,7 @@ namespace Validatum
         /// <param name="message">The message to use in broken rule.</param>
         /// <typeparam name="T">The source type.</typeparam>
         /// <typeparam name="P">The target type.</typeparam>
-        public static IValidatorBuilder<T> NotNullFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> NotNull<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector, 
             string key = null,
             string message = null)
@@ -75,8 +72,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !(ctx.Value is null),
+                .WhenNot(
+                    ctx => ctx.Value is null,
                     ctx => ctx.AddBrokenRule(nameof(Null), key, message ?? "Value must be null.")
                 );
         }
@@ -90,7 +87,7 @@ namespace Validatum
         /// <param name="message">The message to use in broken rule.</param>
         /// <typeparam name="T">The source type.</typeparam>
         /// <typeparam name="P">The target type.</typeparam>
-        public static IValidatorBuilder<T> NullFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> Null<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector, 
             string key = null,
             string message = null)
@@ -128,8 +125,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !(ctx.Value is null && other is null) && !(ctx.Value?.Equals(other) ?? false),
+                .WhenNot(
+                    ctx => (ctx.Value is null && other is null) || (ctx.Value?.Equals(other) ?? false),
                     ctx => ctx.AddBrokenRule(nameof(Equal), key, message ?? $"Value must equal '{other?.ToString() ?? "null"}'.")
                 );
         }
@@ -144,7 +141,7 @@ namespace Validatum
         /// <param name="message">The message to use in broken rule.</param>
         /// <typeparam name="T">The source type.</typeparam>
         /// <typeparam name="P">The target type.</typeparam>
-        public static IValidatorBuilder<T> EqualFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> Equal<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector,
             P other,
             string key = null,
@@ -198,7 +195,7 @@ namespace Validatum
         /// <param name="message">The message to use in broken rule.</param>
         /// <typeparam name="T">The source type.</typeparam>
         /// <typeparam name="P">The target type.</typeparam>
-        public static IValidatorBuilder<T> NotEqualFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> NotEqual<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector,
             P other,
             string key = null,

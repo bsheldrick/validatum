@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 namespace Validatum
 {
     /// <summary>
-    /// Extension methods for adding validation delegates.
+    /// Extension methods for adding validator delegates.
     /// </summary>
     public static partial class ValidatorBuilderExtensions
     {
@@ -123,6 +123,39 @@ namespace Validatum
         }
 
         /// <summary>
+        /// Adds a validator function that will execute when the predicate resolves to false.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <param name="func">The function to execute.</param>
+        public static IValidatorBuilder<T> WhenNot<T>(this IValidatorBuilder<T> builder, Func<ValidationContext<T>, bool> predicate, ValidatorDelegate<T> func)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (func is null)
+            {
+                throw new ArgumentNullException(nameof(func));
+            }
+
+            return builder
+                .With(ctx => 
+                {
+                    if (!predicate(ctx))
+                    {
+                        func(ctx);
+                    }
+                });
+        }
+
+        /// <summary>
         /// Executes the delegate function when <see cref="ValidationContext{T}.IsValid"/> is true.
         /// </summary>
         /// <param name="builder">The validator builder.</param>
@@ -136,7 +169,7 @@ namespace Validatum
         /// <param name="builder">The validator builder.</param>
         /// <param name="func">The function.</param>
         public static IValidatorBuilder<T> WhenInvalid<T>(this IValidatorBuilder<T> builder, ValidatorDelegate<T> func)
-            => When(builder, ctx => !ctx.IsValid, func);
+            => WhenNot(builder, ctx => ctx.IsValid, func);
 
         /// <summary>
         /// Adds an external validator to the validator.
@@ -170,7 +203,7 @@ namespace Validatum
         /// <param name="builder">The validator builder.</param>
         /// <param name="selector">The selector expression.</param>
         /// <param name="validator">The external validator.</param>
-        public static IValidatorBuilder<T> ValidatorFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> Validator<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector,
             Validator<P> validator)
         {
@@ -210,6 +243,26 @@ namespace Validatum
             }
 
             return builder.WhenInvalid(ctx => ctx.AggregateBrokenRules(message));
+        }
+
+        /// <summary>
+        /// Aggregate broken rules into a single broken rule using a function to build and return the message.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="func">The function to build and return a message.</param>
+        public static IValidatorBuilder<T> Message<T>(this IValidatorBuilder<T> builder, Func<ValidationContext<T>, string> func)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (func is null)
+            {
+                throw new ArgumentNullException(nameof(func));
+            }
+
+            return builder.WhenInvalid(ctx => ctx.AggregateBrokenRules(func(ctx)));
         }
     }
 }

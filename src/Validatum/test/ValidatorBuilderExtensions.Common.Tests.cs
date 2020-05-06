@@ -86,7 +86,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.NotNullFor<string, string>(null, null);
+                ValidatorBuilderExtensions.NotNull<string, string>(null, null);
             });
         }
 
@@ -95,7 +95,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.NotNullFor<string, string>(new ValidatorBuilder<string>(), null);
+                ValidatorBuilderExtensions.NotNull<string, string>(new ValidatorBuilder<string>(), null);
             });
         }
 
@@ -104,7 +104,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotNullFor(e => e.Employer.Name)
+                .NotNull(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -127,7 +127,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotNullFor(e => e.Employer.Name)
+                .NotNull(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -146,7 +146,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotNullFor(e => e.Employer.Name)
+                .NotNull(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -167,7 +167,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotNullFor(e => e.Employer.Name, key: "test")
+                .NotNull(e => e.Employer.Name, key: "test")
                 .Build();
 
             // act
@@ -188,7 +188,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotNullFor(e => e.Employer.Name, message: "test")
+                .NotNull(e => e.Employer.Name, message: "test")
                 .Build();
 
             // act
@@ -209,7 +209,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotNullFor(e => e.Employer.Name)
+                .NotNull(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -304,7 +304,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.NullFor<string, string>(null, null);
+                ValidatorBuilderExtensions.Null<string, string>(null, null);
             });
         }
 
@@ -313,7 +313,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.NullFor<string, string>(new ValidatorBuilder<string>(), null);
+                ValidatorBuilderExtensions.Null<string, string>(new ValidatorBuilder<string>(), null);
             });
         }
 
@@ -322,7 +322,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NullFor(e => e.Employer.Name)
+                .Null(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -344,7 +344,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NullFor(e => e.Employer.Name)
+                .Null(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -364,7 +364,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NullFor(e => e.Employer.Name)
+                .Null(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -385,7 +385,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NullFor(e => e.Employer.Name, key: "test")
+                .Null(e => e.Employer.Name, key: "test")
                 .Build();
 
             // act
@@ -406,7 +406,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NullFor(e => e.Employer.Name, message: "test")
+                .Null(e => e.Employer.Name, message: "test")
                 .Build();
 
             // act
@@ -536,7 +536,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.EqualFor<string, string>(null, null, null);
+                ValidatorBuilderExtensions.Equal<string, string>(null, null, null);
             });
         }
 
@@ -545,7 +545,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.EqualFor<string, string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.Equal<string, string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -554,7 +554,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EqualFor(e => e.LastName, "Simpson")
+                .Equal(e => e.LastName, "Simpson")
                 .Build();
 
             // act
@@ -573,7 +573,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EqualFor(e => e.LastName, null)
+                .Equal(e => e.LastName, null)
                 .Build();
 
             // act
@@ -592,7 +592,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EqualFor(e => e.LastName, "Smith")
+                .Equal(e => e.LastName, "Smith")
                 .Build();
 
             // act
@@ -607,7 +607,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EqualFor(e => e.LastName, null)
+                .Equal(e => e.LastName, null)
                 .Build();
 
             // act
@@ -622,7 +622,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EqualFor(e => e.LastName, "test", "test")
+                .Equal(e => e.LastName, "test", "test")
                 .Build();
 
             // act
@@ -638,7 +638,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EqualFor(e => e.LastName, "test", message: "test")
+                .Equal(e => e.LastName, "test", message: "test")
                 .Build();
 
             // act
@@ -744,7 +744,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.NotEqualFor<string, string>(null, null, null);
+                ValidatorBuilderExtensions.NotEqual<string, string>(null, null, null);
             });
         }
 
@@ -753,7 +753,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.NotEqualFor<string, string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.NotEqual<string, string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -762,7 +762,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEqualFor(e => e.Salary, 50000)
+                .NotEqual(e => e.Salary, 50000)
                 .Build();
 
             // act
@@ -781,7 +781,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEqualFor(e => e.Salary, 50000)
+                .NotEqual(e => e.Salary, 50000)
                 .Build();
 
             // act
@@ -796,7 +796,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEqualFor(e => e.FirstName, null)
+                .NotEqual(e => e.FirstName, null)
                 .Build();
 
             // act
@@ -811,7 +811,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEqualFor(e => e.LastName, "Simpson", "test")
+                .NotEqual(e => e.LastName, "Simpson", "test")
                 .Build();
 
             // act
@@ -827,7 +827,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEqualFor(e => e.LastName, "Simpson", message: "test")
+                .NotEqual(e => e.LastName, "Simpson", message: "test")
                 .Build();
 
             // act

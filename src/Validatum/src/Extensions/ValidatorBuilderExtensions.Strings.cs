@@ -4,9 +4,6 @@ using System.Text.RegularExpressions;
 
 namespace Validatum
 {
-    /// <summary>
-    /// Extension methods for adding string validation delegates.
-    /// </summary>
     public static partial class ValidatorBuilderExtensions
     {        
         /// <summary>
@@ -24,7 +21,7 @@ namespace Validatum
 
             return builder
                 .When(
-                    ctx => string.IsNullOrEmpty(ctx.Value),
+                    ctx => ctx.Value == string.Empty,
                     ctx => ctx.AddBrokenRule(nameof(NotEmpty), key, message ?? "Value cannot be empty.")
                 );
         }
@@ -36,7 +33,7 @@ namespace Validatum
         /// <param name="selector">The selector expression.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> NotEmptyFor<T>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> NotEmpty<T>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, string>> selector,
             string key = null,
             string message = null)
@@ -70,8 +67,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => ctx.Value != string.Empty,
+                .WhenNot(
+                    ctx => ctx.Value == string.Empty,
                     ctx => ctx.AddBrokenRule(nameof(Empty), key, message ?? "Value must be empty.")
                 );
         }
@@ -83,7 +80,7 @@ namespace Validatum
         /// <param name="selector">The selector expression.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> EmptyFor<T>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> Empty<T>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, string>> selector,
             string key = null,
             string message = null)
@@ -126,8 +123,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => ctx.Value is null || !System.Text.RegularExpressions.Regex.IsMatch(ctx.Value, pattern),
+                .WhenNot(
+                    ctx => System.Text.RegularExpressions.Regex.IsMatch(ctx.Value ?? string.Empty, pattern),
                     ctx => ctx.AddBrokenRule(nameof(Regex), key, message ?? "Value must match pattern.")
                 );
         }
@@ -157,8 +154,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => ctx.Value is null || !System.Text.RegularExpressions.Regex.IsMatch(ctx.Value, pattern, options),
+                .WhenNot(
+                    ctx => System.Text.RegularExpressions.Regex.IsMatch(ctx.Value ?? string.Empty, pattern, options),
                     ctx => ctx.AddBrokenRule(nameof(Regex), key, message ?? "Value must match pattern.")
                 );
         }
@@ -172,7 +169,7 @@ namespace Validatum
         /// <param name="pattern">The regular expression pattern.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> RegexFor<T>(this IValidatorBuilder<T> builder,
+        public static IValidatorBuilder<T> Regex<T>(this IValidatorBuilder<T> builder,
             Expression<Func<T, string>> selector,
             string pattern,
             string key = null,
@@ -206,7 +203,7 @@ namespace Validatum
         /// <param name="options">The regex options.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> RegexFor<T>(this IValidatorBuilder<T> builder,
+        public static IValidatorBuilder<T> Regex<T>(this IValidatorBuilder<T> builder,
             Expression<Func<T, string>> selector,
             string pattern,
             RegexOptions options,
@@ -251,8 +248,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !ctx.Value?.StartsWith(value) ?? true,
+                .WhenNot(
+                    ctx => ctx.Value?.StartsWith(value) ?? false,
                     ctx => ctx.AddBrokenRule(nameof(StartsWith), key, message ?? $"Value must start with '{value}'.")
                 );
         }
@@ -265,7 +262,7 @@ namespace Validatum
         /// <param name="value">The value the string starts with.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> StartsWithFor<T>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> StartsWith<T>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, string>> selector,
             string value,
             string key = null,
@@ -311,8 +308,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !ctx.Value?.EndsWith(value) ?? true,
+                .WhenNot(
+                    ctx => ctx.Value?.EndsWith(value) ?? false,
                     ctx => ctx.AddBrokenRule(nameof(EndsWith), key, message ?? $"Value must end with '{value}'.")
                 );
         }
@@ -325,7 +322,7 @@ namespace Validatum
         /// <param name="value">The value the string ends with.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> EndsWithFor<T>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> EndsWith<T>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, string>> selector,
             string value,
             string key = null,
@@ -371,8 +368,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !ctx.Value?.Contains(value) ?? true,
+                .WhenNot(
+                    ctx => ctx.Value?.Contains(value) ?? false,
                     ctx => ctx.AddBrokenRule(nameof(Contains), key, message ?? $"Value must contain '{value}'.")
                 );
         }
@@ -385,7 +382,7 @@ namespace Validatum
         /// <param name="value">The value the string contains.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> ContainsFor<T>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> Contains<T>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, string>> selector,
             string value,
             string key = null,
@@ -457,7 +454,7 @@ namespace Validatum
         /// <param name="max">The maximum length (optional).</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> LengthFor<T>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> Length<T>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, string>> selector,           
             int min, 
             int? max = null, 

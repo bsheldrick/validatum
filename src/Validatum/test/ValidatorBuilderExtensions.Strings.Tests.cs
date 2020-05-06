@@ -17,7 +17,7 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void NotEmpty_ShouldAddBrokenRuleToContext_WhenValueIsEmpty()
+        public void NotEmpty_ShouldAddBrokenRule_WhenValueIsEmpty()
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
@@ -36,7 +36,7 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void NotEmpty_ShouldAddBrokenRuleToContext_WhenValueIsNull()
+        public void NotEmpty_ShouldNotAddBrokenRule_WhenValueIsNull()
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
@@ -45,17 +45,13 @@ namespace Validatum.Tests
 
             // act
             var result = validator.Validate(null);
-            var brokenRule = result.BrokenRules.FirstOrDefault();
 
             // assert
-            Assert.NotNull(brokenRule);
-            Assert.Equal("NotEmpty", brokenRule.Rule);
-            Assert.Equal("String", brokenRule.Key);
-            Assert.Equal("Value cannot be empty.", brokenRule.Message);
+            Assert.Empty(result.BrokenRules);
         }
 
         [Fact]
-        public void NotEmpty_ShouldNotAddBrokenRuleToContext_WhenValueIsNotEmpty()
+        public void NotEmpty_ShouldNotAddBrokenRule_WhenValueIsNotEmpty()
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
@@ -106,7 +102,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.NotEmptyFor<string>(null, null);
+                ValidatorBuilderExtensions.NotEmpty<string>(null, null);
             });
         }
 
@@ -115,7 +111,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.NotEmptyFor<string>(new ValidatorBuilder<string>(), null);
+                ValidatorBuilderExtensions.NotEmpty<string>(new ValidatorBuilder<string>(), null);
             });
         }
         
@@ -124,7 +120,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEmptyFor(e => e.Employer.Name)
+                .NotEmpty(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -142,11 +138,11 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void NotEmptyFor_ShouldAddBrokenRule_WhenValueIsNull()
+        public void NotEmptyFor_ShouldNotAddBrokenRule_WhenValueIsNull()
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEmptyFor(e => e.Employer.Name)
+                .NotEmpty(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -155,12 +151,9 @@ namespace Validatum.Tests
                 FirstName = "John",
                 Employer = new Company { Id = 5 }
             });
-            var brokenRule = result.BrokenRules.LastOrDefault();
 
             // assert
-            Assert.NotNull(brokenRule);
-            Assert.Equal("NotEmpty", brokenRule.Rule);
-            Assert.Equal("Employer.Name", brokenRule.Key);
+            Assert.Empty(result.BrokenRules);
         }
 
         [Fact]
@@ -168,7 +161,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEmptyFor(e => e.Employer.Name)
+                .NotEmpty(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -188,7 +181,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEmptyFor(e => e.Employer.Name)
+                .NotEmpty(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -210,7 +203,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEmptyFor(e => e.Employer.Name, key: "test")
+                .NotEmpty(e => e.Employer.Name, key: "test")
                 .Build();
 
             // act
@@ -230,7 +223,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .NotEmptyFor(e => e.Employer.Name, message: "test")
+                .NotEmpty(e => e.Employer.Name, message: "test")
                 .Build();
 
             // act
@@ -344,7 +337,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.EmptyFor<string>(null, null);
+                ValidatorBuilderExtensions.Empty<string>(null, null);
             });
         }
 
@@ -353,7 +346,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.EmptyFor<string>(new ValidatorBuilder<string>(), null);
+                ValidatorBuilderExtensions.Empty<string>(new ValidatorBuilder<string>(), null);
             });
         }
         
@@ -362,7 +355,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EmptyFor(e => e.Employer.Name)
+                .Empty(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -384,7 +377,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EmptyFor(e => e.Employer.Name)
+                .Empty(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -406,7 +399,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EmptyFor(e => e.Employer.Name)
+                .Empty(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -426,7 +419,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EmptyFor(e => e.Employer.Name)
+                .Empty(e => e.Employer.Name)
                 .Build();
 
             // act
@@ -448,7 +441,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EmptyFor(e => e.Employer.Name, key: "test")
+                .Empty(e => e.Employer.Name, key: "test")
                 .Build();
 
             // act
@@ -468,7 +461,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EmptyFor(e => e.Employer.Name, message: "test")
+                .Empty(e => e.Employer.Name, message: "test")
                 .Build();
 
             // act
@@ -615,7 +608,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.RegexFor<string>(null, null, null);
+                ValidatorBuilderExtensions.Regex<string>(null, null, null);
             });
         }
 
@@ -624,7 +617,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.RegexFor<string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.Regex<string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -633,7 +626,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("pattern", () =>
             {
-                ValidatorBuilderExtensions.RegexFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+                ValidatorBuilderExtensions.Regex<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
             });
         }
 
@@ -642,7 +635,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("pattern", () =>
             {
-                ValidatorBuilderExtensions.RegexFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
+                ValidatorBuilderExtensions.Regex<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
             });
         }
 
@@ -651,7 +644,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .RegexFor(e => e.FirstName, "a{1,4}")
+                .Regex(e => e.FirstName, "a{1,4}")
                 .Build();
 
             // act
@@ -670,7 +663,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .RegexFor(e => e.FirstName, "a{1,4}")
+                .Regex(e => e.FirstName, "a{1,4}")
                 .Build();
 
             // act
@@ -689,7 +682,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .RegexFor(e => e.FirstName, "a{1,4}")
+                .Regex(e => e.FirstName, "a{1,4}")
                 .Build();
 
             // act
@@ -704,7 +697,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .RegexFor(e => e.FirstName, "a{1,4}", "test")
+                .Regex(e => e.FirstName, "a{1,4}", "test")
                 .Build();
 
             // act
@@ -720,7 +713,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .RegexFor(e => e.FirstName, "a{1,4}", message: "test")
+                .Regex(e => e.FirstName, "a{1,4}", message: "test")
                 .Build();
 
             // act
@@ -736,7 +729,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .RegexFor(e => e.FirstName, "a{1,4}", RegexOptions.IgnoreCase)
+                .Regex(e => e.FirstName, "a{1,4}", RegexOptions.IgnoreCase)
                 .Build();
 
             // act
@@ -863,7 +856,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.StartsWithFor<string>(null, null, null);
+                ValidatorBuilderExtensions.StartsWith<string>(null, null, null);
             });
         }
 
@@ -872,7 +865,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.StartsWithFor<string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.StartsWith<string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -881,7 +874,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("value", () =>
             {
-                ValidatorBuilderExtensions.StartsWithFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+                ValidatorBuilderExtensions.StartsWith<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
             });
         }
 
@@ -890,7 +883,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("value", () =>
             {
-                ValidatorBuilderExtensions.StartsWithFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
+                ValidatorBuilderExtensions.StartsWith<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
             });
         }
 
@@ -899,7 +892,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .StartsWithFor(e => e.LastName, "Data")
+                .StartsWith(e => e.LastName, "Data")
                 .Build();
 
             // act
@@ -918,7 +911,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .StartsWithFor(e => e.LastName, "Data")
+                .StartsWith(e => e.LastName, "Data")
                 .Build();
 
             // act
@@ -937,7 +930,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .StartsWithFor(e => e.LastName, "Data")
+                .StartsWith(e => e.LastName, "Data")
                 .Build();
 
             // act
@@ -952,7 +945,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .StartsWithFor(e => e.LastName, "Pica", "test")
+                .StartsWith(e => e.LastName, "Pica", "test")
                 .Build();
 
             // act
@@ -968,7 +961,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .StartsWithFor(e => e.LastName, "Pica", message: "test")
+                .StartsWith(e => e.LastName, "Pica", message: "test")
                 .Build();
 
             // act
@@ -1096,7 +1089,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.EndsWithFor<string>(null, null, null);
+                ValidatorBuilderExtensions.EndsWith<string>(null, null, null);
             });
         }
 
@@ -1105,7 +1098,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.EndsWithFor<string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.EndsWith<string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -1114,7 +1107,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("value", () =>
             {
-                ValidatorBuilderExtensions.EndsWithFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+                ValidatorBuilderExtensions.EndsWith<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
             });
         }
 
@@ -1123,7 +1116,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("value", () =>
             {
-                ValidatorBuilderExtensions.EndsWithFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
+                ValidatorBuilderExtensions.EndsWith<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
             });
         }
 
@@ -1132,7 +1125,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EndsWithFor(e => e.LastName, "Data")
+                .EndsWith(e => e.LastName, "Data")
                 .Build();
 
             // act
@@ -1151,7 +1144,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EndsWithFor(e => e.LastName, "Data")
+                .EndsWith(e => e.LastName, "Data")
                 .Build();
 
             // act
@@ -1170,7 +1163,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EndsWithFor(e => e.LastName, "man")
+                .EndsWith(e => e.LastName, "man")
                 .Build();
 
             // act
@@ -1185,7 +1178,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EndsWithFor(e => e.LastName, "Pica", "test")
+                .EndsWith(e => e.LastName, "Pica", "test")
                 .Build();
 
             // act
@@ -1201,7 +1194,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .EndsWithFor(e => e.LastName, "Pica", message: "test")
+                .EndsWith(e => e.LastName, "Pica", message: "test")
                 .Build();
 
             // act
@@ -1329,7 +1322,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.ContainsFor<string>(null, null, null);
+                ValidatorBuilderExtensions.Contains<string>(null, null, null);
             });
         }
 
@@ -1338,7 +1331,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.ContainsFor<string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.Contains<string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -1347,7 +1340,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("value", () =>
             {
-                ValidatorBuilderExtensions.ContainsFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+                ValidatorBuilderExtensions.Contains<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
             });
         }
 
@@ -1356,7 +1349,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("value", () =>
             {
-                ValidatorBuilderExtensions.ContainsFor<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
+                ValidatorBuilderExtensions.Contains<Employee>(new ValidatorBuilder<Employee>(), e => e.FirstName, string.Empty);
             });
         }
 
@@ -1365,7 +1358,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .ContainsFor(e => e.LastName, "Data")
+                .Contains(e => e.LastName, "Data")
                 .Build();
 
             // act
@@ -1384,7 +1377,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .ContainsFor(e => e.LastName, "Data")
+                .Contains(e => e.LastName, "Data")
                 .Build();
 
             // act
@@ -1403,7 +1396,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .ContainsFor(e => e.LastName, "man")
+                .Contains(e => e.LastName, "man")
                 .Build();
 
             // act
@@ -1418,7 +1411,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .ContainsFor(e => e.LastName, "Pica", "test")
+                .Contains(e => e.LastName, "Pica", "test")
                 .Build();
 
             // act
@@ -1434,7 +1427,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .ContainsFor(e => e.LastName, "Pica", message: "test")
+                .Contains(e => e.LastName, "Pica", message: "test")
                 .Build();
 
             // act
@@ -1611,7 +1604,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.LengthFor<string>(null, null, 0);
+                ValidatorBuilderExtensions.Length<string>(null, null, 0);
             });
         }
 
@@ -1620,7 +1613,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.LengthFor<string>(new ValidatorBuilder<string>(), null, 0);
+                ValidatorBuilderExtensions.Length<string>(new ValidatorBuilder<string>(), null, 0);
             });
         }
 
@@ -1629,7 +1622,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentOutOfRangeException>("min", () =>
             {
-                ValidatorBuilderExtensions.LengthFor(new ValidatorBuilder<Employee>(), e => e.FirstName, -1);
+                ValidatorBuilderExtensions.Length(new ValidatorBuilder<Employee>(), e => e.FirstName, -1);
             });
         }
 
@@ -1638,7 +1631,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentOutOfRangeException>("min", () =>
             {
-                ValidatorBuilderExtensions.LengthFor(new ValidatorBuilder<Employee>(), e => e.FirstName, 3, 2);
+                ValidatorBuilderExtensions.Length(new ValidatorBuilder<Employee>(), e => e.FirstName, 3, 2);
             });
         }
 
@@ -1647,7 +1640,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LengthFor(e => e.FirstName, 5)
+                .Length(e => e.FirstName, 5)
                 .Build();
 
             // act
@@ -1666,7 +1659,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LengthFor(e => e.FirstName, 5)
+                .Length(e => e.FirstName, 5)
                 .Build();
 
             // act
@@ -1685,7 +1678,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LengthFor(e => e.FirstName, 5, 7)
+                .Length(e => e.FirstName, 5, 7)
                 .Build();
 
             // act
@@ -1704,7 +1697,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LengthFor(e => e.FirstName, 4)
+                .Length(e => e.FirstName, 4)
                 .Build();
 
             // act
@@ -1719,7 +1712,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LengthFor(e => e.FirstName, 3, 5)
+                .Length(e => e.FirstName, 3, 5)
                 .Build();
 
             // act
@@ -1734,7 +1727,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LengthFor(e => e.FirstName, 5, 8)
+                .Length(e => e.FirstName, 5, 8)
                 .Build();
 
             // act
@@ -1749,7 +1742,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LengthFor(e => e.FirstName, 8, key: "test")
+                .Length(e => e.FirstName, 8, key: "test")
                 .Build();
 
             // act
@@ -1765,7 +1758,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LengthFor(e => e.FirstName, 8, message: "test")
+                .Length(e => e.FirstName, 8, message: "test")
                 .Build();
 
             // act

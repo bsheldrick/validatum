@@ -124,7 +124,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.GreaterThanFor<string, string>(null, null, null);
+                ValidatorBuilderExtensions.GreaterThan<string, string>(null, null, null);
             });
         }
 
@@ -133,7 +133,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.GreaterThanFor<string, string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.GreaterThan<string, string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -142,7 +142,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanFor(e => e.FirstName, "a")
+                .GreaterThan(e => e.FirstName, "a")
                 .Build();
 
             // act
@@ -161,7 +161,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanFor(e => e.Id, 5)
+                .GreaterThan(e => e.Id, 5)
                 .Build();
 
             // act
@@ -180,7 +180,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanFor(e => e.Id, 5)
+                .GreaterThan(e => e.Id, 5)
                 .Build();
 
             // act
@@ -199,7 +199,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanFor(e => e.Id, 5)
+                .GreaterThan(e => e.Id, 5)
                 .Build();
 
             // act
@@ -214,7 +214,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanFor(e => e.Id, 5, "test")
+                .GreaterThan(e => e.Id, 5, "test")
                 .Build();
 
             // act
@@ -230,7 +230,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanFor(e => e.Id, 5, message: "test")
+                .GreaterThan(e => e.Id, 5, message: "test")
                 .Build();
 
             // act
@@ -355,7 +355,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.GreaterThanOrEqualFor<string, string>(null, null, null);
+                ValidatorBuilderExtensions.GreaterThanOrEqual<string, string>(null, null, null);
             });
         }
 
@@ -364,7 +364,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.GreaterThanOrEqualFor<string, string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.GreaterThanOrEqual<string, string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -373,7 +373,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanOrEqualFor(e => e.FirstName, "a")
+                .GreaterThanOrEqual(e => e.FirstName, "a")
                 .Build();
 
             // act
@@ -392,7 +392,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanOrEqualFor(e => e.Id, 5)
+                .GreaterThanOrEqual(e => e.Id, 5)
                 .Build();
 
             // act
@@ -411,7 +411,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanOrEqualFor(e => e.Id, 5)
+                .GreaterThanOrEqual(e => e.Id, 5)
                 .Build();
 
             // act
@@ -426,7 +426,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanOrEqualFor(e => e.Id, 5)
+                .GreaterThanOrEqual(e => e.Id, 5)
                 .Build();
 
             // act
@@ -441,7 +441,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanOrEqualFor(e => e.Id, 5, "test")
+                .GreaterThanOrEqual(e => e.Id, 5, "test")
                 .Build();
 
             // act
@@ -457,7 +457,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .GreaterThanOrEqualFor(e => e.Id, 5, message: "test")
+                .GreaterThanOrEqual(e => e.Id, 5, message: "test")
                 .Build();
 
             // act
@@ -586,7 +586,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.LessThanFor<string, string>(null, null, null);
+                ValidatorBuilderExtensions.LessThan<string, string>(null, null, null);
             });
         }
 
@@ -595,7 +595,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.LessThanFor<string, string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.LessThan<string, string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -604,7 +604,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanFor(e => e.FirstName, "a")
+                .LessThan(e => e.FirstName, "a")
                 .Build();
 
             // act
@@ -623,7 +623,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanFor(e => e.Id, 5)
+                .LessThan(e => e.Id, 5)
                 .Build();
 
             // act
@@ -642,7 +642,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanFor(e => e.Id, 5)
+                .LessThan(e => e.Id, 5)
                 .Build();
 
             // act
@@ -661,7 +661,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanFor(e => e.Id, 5)
+                .LessThan(e => e.Id, 5)
                 .Build();
 
             // act
@@ -676,7 +676,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanFor(e => e.Id, -1, "test")
+                .LessThan(e => e.Id, -1, "test")
                 .Build();
 
             // act
@@ -692,7 +692,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanFor(e => e.Id, -1, message: "test")
+                .LessThan(e => e.Id, -1, message: "test")
                 .Build();
 
             // act
@@ -817,7 +817,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.LessThanOrEqualFor<string, string>(null, null, null);
+                ValidatorBuilderExtensions.LessThanOrEqual<string, string>(null, null, null);
             });
         }
 
@@ -826,7 +826,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.LessThanOrEqualFor<string, string>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.LessThanOrEqual<string, string>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -835,7 +835,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanOrEqualFor(e => e.FirstName, "a")
+                .LessThanOrEqual(e => e.FirstName, "a")
                 .Build();
 
             // act
@@ -854,7 +854,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanOrEqualFor(e => e.Id, 4)
+                .LessThanOrEqual(e => e.Id, 4)
                 .Build();
 
             // act
@@ -873,7 +873,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanOrEqualFor(e => e.Id, 5)
+                .LessThanOrEqual(e => e.Id, 5)
                 .Build();
 
             // act
@@ -888,7 +888,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanOrEqualFor(e => e.Id, 6)
+                .LessThanOrEqual(e => e.Id, 6)
                 .Build();
 
             // act
@@ -903,7 +903,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanOrEqualFor(e => e.Id, -1, "test")
+                .LessThanOrEqual(e => e.Id, -1, "test")
                 .Build();
 
             // act
@@ -919,7 +919,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .LessThanOrEqualFor(e => e.Id, -1, message: "test")
+                .LessThanOrEqual(e => e.Id, -1, message: "test")
                 .Build();
 
             // act

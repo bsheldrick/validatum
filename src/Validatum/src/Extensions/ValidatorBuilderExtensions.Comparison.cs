@@ -3,9 +3,6 @@ using System.Linq.Expressions;
 
 namespace Validatum
 {
-    /// <summary>
-    /// Extension methods for adding validation delegates.
-    /// </summary>
     public static partial class ValidatorBuilderExtensions
     {        
         /// <summary>
@@ -24,8 +21,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !(ctx.Value?.CompareTo(other) > 0),
+                .WhenNot(
+                    ctx => ctx.Value?.CompareTo(other) > 0,
                     ctx => ctx.AddBrokenRule(nameof(GreaterThan), key, message ?? $"Value must be greater than '{other?.ToString() ?? "null"}'.")
                 );
         }
@@ -38,7 +35,7 @@ namespace Validatum
         /// <param name="other">The value to test if greater than.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> GreaterThanFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> GreaterThan<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector,
             P other, 
             string key = null, 
@@ -76,8 +73,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !(ctx.Value?.CompareTo(other) >= 0),
+                .WhenNot(
+                    ctx => ctx.Value?.CompareTo(other) >= 0,
                     ctx => ctx.AddBrokenRule(nameof(GreaterThanOrEqual), key, message ?? $"Value must be greater than or equal to '{other?.ToString() ?? "null"}'.")
                 );
         }
@@ -91,7 +88,7 @@ namespace Validatum
         /// <param name="other">The value to test if greater than.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> GreaterThanOrEqualFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> GreaterThanOrEqual<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector,
             P other, 
             string key = null, 
@@ -129,8 +126,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !(ctx.Value?.CompareTo(other) < 0),
+                .WhenNot(
+                    ctx => ctx.Value?.CompareTo(other) < 0,
                     ctx => ctx.AddBrokenRule(nameof(LessThan), key, message ?? $"Value must be less than '{other?.ToString() ?? "null"}'.")
                 );
         }
@@ -143,7 +140,7 @@ namespace Validatum
         /// <param name="other">The value to test if less than.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> LessThanFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> LessThan<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector,
             P other, 
             string key = null, 
@@ -181,8 +178,8 @@ namespace Validatum
             }
 
             return builder
-                .When(
-                    ctx => !(ctx.Value?.CompareTo(other) <= 0),
+                .WhenNot(
+                    ctx => ctx.Value?.CompareTo(other) <= 0,
                     ctx => ctx.AddBrokenRule(nameof(LessThanOrEqual), key, message ?? $"Value must be less than or equal to '{other?.ToString() ?? "null"}'.")
                 );
         }
@@ -195,7 +192,7 @@ namespace Validatum
         /// <param name="other">The value to test if less than or equal to.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> LessThanOrEqualFor<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> LessThanOrEqual<T, P>(this IValidatorBuilder<T> builder, 
             Expression<Func<T, P>> selector,
             P other, 
             string key = null, 

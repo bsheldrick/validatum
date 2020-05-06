@@ -325,6 +325,71 @@ namespace Validatum.Tests
         }
 
         [Fact]
+        public void WhenNot_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.WhenNot<string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void WhenNot_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("predicate", () =>
+            {
+                ValidatorBuilderExtensions.WhenNot<string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void WhenNot_ThrowsException_WhenFuncIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("func", () =>
+            {
+                ValidatorBuilderExtensions.WhenNot<Employee>(new ValidatorBuilder<Employee>(), e => true, null);
+            });
+        }
+
+        [Fact]
+        public void WhenNot_ShouldExecuteFunction_WhenPredicateIsFalse()
+        {
+            // arrange
+            bool funcCalled = false;
+            var validator = new ValidatorBuilder<Employee>()
+                .WhenNot(ctx => ctx.Value.FirstName == "Ken", ctx => 
+                {
+                    funcCalled = true;
+                })
+                .Build();
+            
+            // act
+            validator.Validate(new Employee { FirstName = "Kenny" });
+
+            // assert
+            Assert.True(funcCalled);
+        }
+
+        [Fact]
+        public void WhenNot_ShouldNotExecuteFunction_WhenPredicateIsTrue()
+        {
+            // arrange
+            bool funcCalled = false;
+            var validator = new ValidatorBuilder<Employee>()
+                .WhenNot(ctx => ctx.Value.FirstName == "Ken", ctx => 
+                {
+                    funcCalled = true;
+                })
+                .Build();
+            
+            // act
+            validator.Validate(new Employee { FirstName = "Ken" });
+
+            // assert
+            Assert.False(funcCalled);
+        }
+
+        [Fact]
         public void WhenValid_ThrowsException_WhenBuilderIsNull()
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
@@ -568,7 +633,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.ValidatorFor<string, int>(null, null, null);
+                ValidatorBuilderExtensions.Validator<string, int>(null, null, null);
             });
         }
 
@@ -577,7 +642,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.ValidatorFor<string, int>(new ValidatorBuilder<string>(), null, null);
+                ValidatorBuilderExtensions.Validator<string, int>(new ValidatorBuilder<string>(), null, null);
             });
         }
 
@@ -586,7 +651,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("validator", () =>
             {
-                ValidatorBuilderExtensions.ValidatorFor<Employee, int>(new ValidatorBuilder<Employee>(), e => e.Id, null);
+                ValidatorBuilderExtensions.Validator<Employee, int>(new ValidatorBuilder<Employee>(), e => e.Id, null);
             });
         }
 
@@ -601,7 +666,7 @@ namespace Validatum.Tests
                 .Build();
             var validator2 = new ValidatorBuilder<Employee>()
                 .With(ctx => { validator2Called = true; })
-                .ValidatorFor(e => e.LastName, validator1)
+                .Validator(e => e.LastName, validator1)
                 .Build();
 
             // act
@@ -617,7 +682,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.Message<string>(null, null);
+                ValidatorBuilderExtensions.Message<string>(null, "");
             });
         }
 
@@ -626,7 +691,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("message", () =>
             {
-                ValidatorBuilderExtensions.Message<string>(new ValidatorBuilder<string>(), null);
+                ValidatorBuilderExtensions.Message(new ValidatorBuilder<string>(), (string)null);
             });
         }
 
@@ -635,7 +700,16 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentException>("message", () =>
             {
-                ValidatorBuilderExtensions.Message<string>(new ValidatorBuilder<string>(), "");
+                ValidatorBuilderExtensions.Message(new ValidatorBuilder<string>(), "");
+            });
+        }
+
+        [Fact]
+        public void Message_ThrowsException_WhenFuncIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("func", () =>
+            {
+                ValidatorBuilderExtensions.Message(new ValidatorBuilder<string>(), (Func<ValidationContext<string>, string>)null);
             });
         }
 
@@ -671,6 +745,44 @@ namespace Validatum.Tests
 
             // act
             var result = validator.Validate(new Employee());
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MessageFunc_ShouldCreateOneBrokenRule_WithRulesJoined_LabelAsKey_AndProvidedMessage()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .With(ctx => ctx.AddBrokenRule("R1", "Key1", "Message1"))
+                .With(ctx => ctx.AddBrokenRule("R2", "Key2", "Message2"))
+                .Message(ctx => $"Test message {ctx.Value.FirstName}.")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Bob" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal(1, result.BrokenRules.Count);
+            Assert.NotNull(brokenRule);
+            Assert.Equal("R1,R2", brokenRule.Rule);
+            Assert.Equal("Employee", brokenRule.Key);
+            Assert.Equal("Test message Bob.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MessageFunc_ShouldNotCreateBrokenRule_WhenNoBrokenRulesInContext()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .For(e => e.FirstName, p => p.Equal("Bob"))
+                .Message(ctx => $"Test message {ctx.Value.FirstName}.")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Bob" });
 
             // assert
             Assert.Empty(result.BrokenRules);
