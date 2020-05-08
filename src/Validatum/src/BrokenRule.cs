@@ -39,5 +39,9 @@ namespace Validatum
         /// Gets the message.
         /// </summary>
         public string Message { get; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+            => $"[{Rule}] {Key}: {Message}";
     }
 }

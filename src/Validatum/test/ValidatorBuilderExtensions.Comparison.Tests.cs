@@ -929,5 +929,374 @@ namespace Validatum.Tests
             // assert
             Assert.Equal("test", brokenRule.Message);
         }
+
+        [Fact]
+        public void Range_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Range<string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void Range_ThrowsException_WhenLowerIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("lower", () =>
+            {
+                ValidatorBuilderExtensions.Range(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void Range_ThrowsException_WhenUpperIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("upper", () =>
+            {
+                ValidatorBuilderExtensions.Range(new ValidatorBuilder<string>(), "", null);
+            });
+        }
+
+        [Fact]
+        public void Range_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Range("a", "d")
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Range", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must be in range 'a' to 'd'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Range_ShouldAddBrokenRule_WhenValueLessThanLower()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .Range(2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(1);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Range", brokenRule.Rule);
+            Assert.Equal("Int32", brokenRule.Key);
+            Assert.Equal("Value must be in range '2' to '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Range_ShouldAddBrokenRule_WhenValueGreaterThanUpper()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .Range(2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(6);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Range", brokenRule.Rule);
+            Assert.Equal("Int32", brokenRule.Key);
+            Assert.Equal("Value must be in range '2' to '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Range_ShouldAddBrokenRule_WhenLowerGreaterThanUpper()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .Range(5, 2)
+                .Build();
+
+            // act
+            var result = validator.Validate(3);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Range", brokenRule.Rule);
+            Assert.Equal("Int32", brokenRule.Key);
+            Assert.Equal("Value must be in range '5' to '2'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Range_ShouldNotAddBrokenRule_WhenValueEqualsLower()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .Range(2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(2);
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void Range_ShouldNotAddBrokenRule_WhenValueEqualsUpper()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .Range(2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(5);
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void Range_ShouldNotAddBrokenRule_WhenValueInRange()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .Range(2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(3);
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void Range_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .Range(1, 3, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(0);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void Range_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<int>()
+                .Range(1, 3, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(0);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RangeFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Range<string, string>(null, null, null, null);
+            });
+        }
+
+        [Fact]
+        public void RangeFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.Range<string, string>(new ValidatorBuilder<string>(), null, null, null);
+            });
+        }
+
+        [Fact]
+        public void RangeFor_ThrowsException_WhenLowerIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("lower", () =>
+            {
+                ValidatorBuilderExtensions.Range<Employee, string>(new ValidatorBuilder<Employee>(), e => e.FirstName, null, null);
+            });
+        }
+
+        [Fact]
+        public void RangeFor_ThrowsException_WhenUpperIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("upper", () =>
+            {
+                ValidatorBuilderExtensions.Range<Employee, string>(new ValidatorBuilder<Employee>(), e => e.FirstName, "a", null);
+            });
+        }
+
+        [Fact]
+        public void RangeFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.FirstName, "a", "d")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Range", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must be in range 'a' to 'd'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RangeFor_ShouldAddBrokenRule_WhenValueLessThanLower()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.Id, 2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 1 });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Range", brokenRule.Rule);
+            Assert.Equal("Id", brokenRule.Key);
+            Assert.Equal("Value must be in range '2' to '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RangeFor_ShouldAddBrokenRule_WhenValueGreaterThanUpper()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.Id, 2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 6 });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Range", brokenRule.Rule);
+            Assert.Equal("Id", brokenRule.Key);
+            Assert.Equal("Value must be in range '2' to '5'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RangeFor_ShouldAddBrokenRule_WhenLowerGreaterThanUpper()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.Id, 5, 2)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 3 });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Range", brokenRule.Rule);
+            Assert.Equal("Id", brokenRule.Key);
+            Assert.Equal("Value must be in range '5' to '2'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RangeFor_ShouldNotAddBrokenRule_WhenValueEqualsLower()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.Id, 2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 2 });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void RangeFor_ShouldNotAddBrokenRule_WhenValueEqualsUpper()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.Id, 2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 5 });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void RangeFor_ShouldNotAddBrokenRule_WhenValueInRange()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.Id, 2, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 3 });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void RangeFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.Id, 1, 3, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 0 });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void RangeFor_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Range(e => e.Id, 1, 3, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Id = 0 });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
     }
 }

@@ -213,5 +213,84 @@ namespace Validatum
             
             return builder.For(selector, p => p.LessThanOrEqual(other, key, message));
         }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is within a specified value range.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="lower">The lower bound range value.</param>
+        /// <param name="upper">The upper bound range value.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> Range<T>(this IValidatorBuilder<T> builder, 
+            T lower, 
+            T upper, 
+            string key = null, 
+            string message = null)
+            where T : IComparable
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (lower is null)
+            {
+                throw new ArgumentNullException(nameof(lower));
+            }
+
+            if (upper is null)
+            {
+                throw new ArgumentNullException(nameof(upper));
+            }
+
+            return builder
+                .WhenNot(
+                    ctx => ctx.Value != null && (lower.CompareTo(ctx.Value) <= 0 && upper.CompareTo(ctx.Value) >= 0),
+                    ctx => ctx.AddBrokenRule(nameof(Range), key, message ?? $"Value must be in range '{lower.ToString() ?? "null"}' to '{upper.ToString() ?? "null"}'.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is within a specified value range for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="lower">The lower bound range value.</param>
+        /// <param name="upper">The upper bound range value.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> Range<T, P>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, P>> selector,
+            P lower,
+            P upper, 
+            string key = null, 
+            string message = null)
+            where P : IComparable
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            if (lower is null)
+            {
+                throw new ArgumentNullException(nameof(lower));
+            }
+
+            if (upper is null)
+            {
+                throw new ArgumentNullException(nameof(upper));
+            }
+
+            key = key ?? selector.GetPropertyPath();
+            
+            return builder.For(selector, p => p.Range(lower, upper, key, message));
+        }
     }
 }
