@@ -213,20 +213,35 @@ namespace Validatum
         }
 
         /// <summary>
-        /// Executes the delegate function when <see cref="ValidationContext{T}.IsValid"/> is true.
+        /// Continues validation if the current validation context is valid.
         /// </summary>
-        /// <param name="builder">The validator builder.</param>
-        /// <param name="func">The function.</param>
-        public static IValidatorBuilder<T> WhenValid<T>(this IValidatorBuilder<T> builder, ValidatorDelegate<T> func)
-            => When(builder, ctx => ctx.IsValid, func);
+        /// <param name="builder">The valiator builder.</param>
+        /// <param name="func">The continue function.</param>
+        public static IValidatorBuilder<T> Continue<T>(this IValidatorBuilder<T> builder, Action<IValidatorBuilder<T>> func)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
 
-        /// <summary>
-        /// Executes the delegate function when <see cref="ValidationContext{T}.IsValid"/> is false.
-        /// </summary>
-        /// <param name="builder">The validator builder.</param>
-        /// <param name="func">The function.</param>
-        public static IValidatorBuilder<T> WhenInvalid<T>(this IValidatorBuilder<T> builder, ValidatorDelegate<T> func)
-            => WhenNot(builder, ctx => ctx.IsValid, func);
+            if (func is null)
+            {
+                throw new ArgumentNullException(nameof(func));
+            }
+
+            var continueBuilder = new ValidatorBuilder<T>();
+            func(continueBuilder);
+            var continueValidator = continueBuilder.Build();
+            
+            return builder
+                .When(
+                    ctx => ctx.IsValid,
+                    ctx =>
+                    {
+                        var result = continueValidator.Validate(ctx.Value, ctx.Options);
+                        ctx.AddBrokenRules(result.BrokenRules.ToArray());
+                    });
+        }
 
         /// <summary>
         /// Adds an external validator to the validator.
@@ -299,7 +314,7 @@ namespace Validatum
                 throw new ArgumentException("message", nameof(message));
             }
 
-            return builder.WhenInvalid(ctx => ctx.AggregateBrokenRules(message));
+            return builder.WhenNot(ctx => ctx.IsValid, ctx => ctx.AggregateBrokenRules(message));
         }
 
         /// <summary>
@@ -319,7 +334,7 @@ namespace Validatum
                 throw new ArgumentNullException(nameof(func));
             }
 
-            return builder.WhenInvalid(ctx => ctx.AggregateBrokenRules(func(ctx)));
+            return builder.WhenNot(ctx => ctx.IsValid, ctx => ctx.AggregateBrokenRules(func(ctx)));
         }
     }
 }

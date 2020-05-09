@@ -505,37 +505,36 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void WhenValid_ThrowsException_WhenBuilderIsNull()
+        public void Continue_ThrowsException_WhenBuilderIsNull()
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.WhenValid<string>(null, null);
+                ValidatorBuilderExtensions.Continue<string>(null, null);
             });
         }
 
         [Fact]
-        public void WhenValid_ThrowsException_WhenFuncIsNull()
+        public void Continue_ThrowsException_WhenFuncIsNull()
         {
             Assert.Throws<ArgumentNullException>("func", () =>
             {
-                ValidatorBuilderExtensions.WhenValid<string>(new ValidatorBuilder<string>(), null);
+                ValidatorBuilderExtensions.Continue<string>(new ValidatorBuilder<string>(), null);
             });
         }
 
         [Fact]
-        public void WhenValid_ShouldExecuteFunction_WhenContextIsValid()
+        public void Continue_ShouldExecuteBuilderFunction_WhenContextIsValid()
         {
             // arrange
             bool funcCalled = false;
-
-            // act
             var validator = new ValidatorBuilder<string>()
-                .WhenValid(ctx => 
+                .Continue(v =>
                 {
-                    funcCalled = true;
+                    v.With(ctx => { funcCalled = true; });
                 })
                 .Build();
             
+            // act
             validator.Validate("test");
 
             // assert
@@ -543,79 +542,19 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void WhenValid_ShouldNotExecuteFunction_WhenContextIsInvalid()
+        public void Continue_ShouldNotExecuteBuilderFunction_WhenContextIsInvalid()
         {
             // arrange
             bool funcCalled = false;
-
-            // act
             var validator = new ValidatorBuilder<string>()
                 .With(ctx => ctx.AddBrokenRule("test", "test", "test"))
-                .WhenValid(ctx => 
+                .Continue(v =>
                 {
-                    funcCalled = true;
+                    v.With(ctx => { funcCalled = true; });
                 })
                 .Build();
             
-            validator.Validate("test");
-
-            // assert
-            Assert.False(funcCalled);
-        }
-
-        [Fact]
-        public void WhenInvalid_ThrowsException_WhenBuilderIsNull()
-        {
-            Assert.Throws<ArgumentNullException>("builder", () =>
-            {
-                ValidatorBuilderExtensions.WhenInvalid<string>(null, null);
-            });
-        }
-
-        [Fact]
-        public void WhenInvalid_ThrowsException_WhenFuncIsNull()
-        {
-            Assert.Throws<ArgumentNullException>("func", () =>
-            {
-                ValidatorBuilderExtensions.WhenInvalid<string>(new ValidatorBuilder<string>(), null);
-            });
-        }
-
-        [Fact]
-        public void WhenInvalid_ShouldExecuteFunction_WhenContextIsInvalid()
-        {
-            // arrange
-            bool funcCalled = false;
-
             // act
-            var validator = new ValidatorBuilder<string>()
-                .With(ctx => ctx.AddBrokenRule("test", "test", "test"))
-                .WhenInvalid(ctx => 
-                {
-                    funcCalled = true;
-                })
-                .Build();
-            
-            validator.Validate("test");
-
-            // assert
-            Assert.True(funcCalled);
-        }
-
-        [Fact]
-        public void WhenInvalid_ShouldNotExecuteFunction_WhenContextIsValid()
-        {
-            // arrange
-            bool funcCalled = false;
-
-            // act
-            var validator = new ValidatorBuilder<string>()
-                .WhenInvalid(ctx => 
-                {
-                    funcCalled = true;
-                })
-                .Build();
-            
             validator.Validate("test");
 
             // assert
