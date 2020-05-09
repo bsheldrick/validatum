@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -89,6 +90,62 @@ namespace Validatum
                 });
         }
 
+        /// <summary>
+        /// Adds a validator to validate all items in a collection from the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="func">The validator builder function.</param>
+        public static IValidatorBuilder<T> ForEach<T, P>(this IValidatorBuilder<T> builder, 
+            Expression<Func<T, IEnumerable<P>>> selector,
+            Action<IValidatorBuilder<P>> func)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            if (func is null)
+            {
+                throw new ArgumentNullException(nameof(func));
+            }
+
+            var label = selector.GetPropertyPath();
+            var selectorFunc = selector.Compile();
+            var itemValidatorBuilder = new ValidatorBuilder<P>();
+            func(itemValidatorBuilder);
+            var itemValidator = itemValidatorBuilder.Build(label);
+
+            return builder
+                .With(ctx => 
+                {
+                    try
+                    {
+                        var items = selectorFunc(ctx.Value);
+
+                        foreach (var item in items.Select((x, i) => new { value = x, index = i }))
+                        {
+                            var result = itemValidator.Validate(item.value, ctx.Options);
+
+                            foreach (var brokenRule in result.BrokenRules)
+                            {
+                                ctx.AddBrokenRule(brokenRule.Rule, $"{brokenRule.Key}[{item.index}]", brokenRule.Message);
+                            }
+                        }
+                    }
+                    catch (NullReferenceException ex) when (ctx.Options.AddBrokenRuleForException)
+                    {
+                        ctx.AddBrokenRule(nameof(NullReferenceException), label, ex.Message);
+                    }
+                    catch {}
+                });
+        }
+        
         /// <summary>
         /// Adds a validator function that will execute when the predicate resolves to true.
         /// </summary>

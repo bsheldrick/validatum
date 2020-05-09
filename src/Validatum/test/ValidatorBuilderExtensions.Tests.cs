@@ -192,10 +192,9 @@ namespace Validatum.Tests
             // act
             var options = new ValidationOptions { AddBrokenRuleForException = false };
             var result = validator.Validate(employee, options);
-            var brokenRule = result.BrokenRules.FirstOrDefault();
             
             // assert
-            Assert.Null(brokenRule);
+            Assert.Empty(result.BrokenRules);
         }
 
         [Fact]
@@ -253,6 +252,122 @@ namespace Validatum.Tests
             Assert.Equal("Test", brokenRule.Rule);
             Assert.Equal("test", brokenRule.Key);
             Assert.Equal("Test error", brokenRule.Message);
+        }
+
+        [Fact]
+        public void ForEach_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.ForEach<string, string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void ForEach_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.ForEach<string, string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void ForEach_ThrowsException_WhenFuncIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("func", () =>
+            {
+                ValidatorBuilderExtensions.ForEach<string, char>(new ValidatorBuilder<string>(), s => s.ToArray(), null);
+            });
+        }
+
+        [Fact]
+        public void ForEach_ShouldAddBrokenRule_WhenItemsHasInvalidItem()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .ForEach(e => e.Skills, val => val.Contains("p").Length(5))
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "John",
+                Skills = new[] { "csharp", "javascript", "html" }
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal(2, result.BrokenRules.Count);
+            Assert.Equal("Contains", brokenRule.Rule);
+            Assert.Equal("Skills[2]", brokenRule.Key);
+            Assert.Equal("Value must contain 'p'.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void ForEach_ShouldNotAddBrokenRule_WhenAllItemsAreValid()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .ForEach(e => e.Skills, val => val.Contains("p").Length(5))
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "John",
+                Skills = new[] { "csharp", "javascript", "typescript" }
+            });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void ForEach_ShouldAddBrokenRule_WhenTargetExpression_CannotBeResolved()
+        {
+            // arrange
+            var employee = new Employee
+            {
+                FirstName = "John",
+                Manager = new Employee { FirstName = "Jane" }
+            };
+
+            var builder = new ValidatorBuilder<Employee>();
+            builder.ForEach(e => e.Employer.Employees, v => {});
+            var validator = builder.Build();
+
+            // act
+            var result = validator.Validate(employee);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+            
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("NullReferenceException", brokenRule.Rule);
+            Assert.Equal("Employer.Employees", brokenRule.Key);
+            Assert.Equal("Object reference not set to an instance of an object.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void ForEach_ShouldNotAddBrokenRule_WhenTargetExpression_CannotBeResolved_AndAddBrokenRuleOnException_IsFalse()
+        {
+            // arrange
+            var employee = new Employee
+            {
+                FirstName = "John",
+                Manager = new Employee { FirstName = "Jane" }
+            };
+
+            var builder = new ValidatorBuilder<Employee>();
+            builder.ForEach(e => e.Skills, v => {});
+            var validator = builder.Build();
+
+            // act
+            var options = new ValidationOptions { AddBrokenRuleForException = false };
+            var result = validator.Validate(employee, options);
+            
+            // assert
+            Assert.Empty(result.BrokenRules);
         }
 
         [Fact]
