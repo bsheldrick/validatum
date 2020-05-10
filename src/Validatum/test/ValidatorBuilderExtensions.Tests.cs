@@ -286,7 +286,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .ForEach(e => e.Skills, val => val.Contains("p").Length(5))
+                .ForEach(e => e.Skills, val => val.Contains("p").MinLength(5))
                 .Build();
 
             // act
@@ -309,7 +309,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .ForEach(e => e.Skills, val => val.Contains("p").Length(5))
+                .ForEach(e => e.Skills, val => val.Contains("p").MinLength(5))
                 .Build();
 
             // act
