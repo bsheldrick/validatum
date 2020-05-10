@@ -1443,7 +1443,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.Length(null, 0);
+                ValidatorBuilderExtensions.Length(null, 0, 3);
             });
         }
 
@@ -1452,7 +1452,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentOutOfRangeException>("min", () =>
             {
-                ValidatorBuilderExtensions.Length(new ValidatorBuilder<string>(), -1);
+                ValidatorBuilderExtensions.Length(new ValidatorBuilder<string>(), -1, 3);
             });
         }
 
@@ -1470,7 +1470,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
-                .Length(5)
+                .Length(5, 8)
                 .Build();
 
             // act
@@ -1481,7 +1481,7 @@ namespace Validatum.Tests
             Assert.NotNull(brokenRule);
             Assert.Equal("Length", brokenRule.Rule);
             Assert.Equal("String", brokenRule.Key);
-            Assert.Equal("Value must have minimum length of 5.", brokenRule.Message);
+            Assert.Equal("Value must be 5 to 8 characters in length.", brokenRule.Message);
         }
         
         [Fact]
@@ -1489,7 +1489,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
-                .Length(5)
+                .Length(5, 8)
                 .Build();
 
             // act
@@ -1500,7 +1500,7 @@ namespace Validatum.Tests
             Assert.NotNull(brokenRule);
             Assert.Equal("Length", brokenRule.Rule);
             Assert.Equal("String", brokenRule.Key);
-            Assert.Equal("Value must have minimum length of 5.", brokenRule.Message);
+            Assert.Equal("Value must be 5 to 8 characters in length.", brokenRule.Message);
         }
 
         [Fact]
@@ -1519,7 +1519,7 @@ namespace Validatum.Tests
             Assert.NotNull(brokenRule);
             Assert.Equal("Length", brokenRule.Rule);
             Assert.Equal("String", brokenRule.Key);
-            Assert.Equal("Value must not exceed maximum length of 7.", brokenRule.Message);
+            Assert.Equal("Value must be 5 to 7 characters in length.", brokenRule.Message);
         }
 
         [Fact]
@@ -1527,7 +1527,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
-                .Length(5)
+                .Length(5, 8)
                 .Build();
 
             // act
@@ -1572,7 +1572,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
-                .Length(8, key: "test")
+                .Length(8, 12, key: "test")
                 .Build();
 
             // act
@@ -1588,7 +1588,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
-                .Length(8, message: "test")
+                .Length(8, 12, message: "test")
                 .Build();
 
             // act
@@ -1604,7 +1604,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.Length<string>(null, null, 0);
+                ValidatorBuilderExtensions.Length<string>(null, null, 0, 3);
             });
         }
 
@@ -1613,7 +1613,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("selector", () =>
             {
-                ValidatorBuilderExtensions.Length<string>(new ValidatorBuilder<string>(), null, 0);
+                ValidatorBuilderExtensions.Length<string>(new ValidatorBuilder<string>(), null, 0, 3);
             });
         }
 
@@ -1622,7 +1622,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentOutOfRangeException>("min", () =>
             {
-                ValidatorBuilderExtensions.Length(new ValidatorBuilder<Employee>(), e => e.FirstName, -1);
+                ValidatorBuilderExtensions.Length(new ValidatorBuilder<Employee>(), e => e.FirstName, -1, 3);
             });
         }
 
@@ -1640,7 +1640,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .Length(e => e.FirstName, 5)
+                .Length(e => e.FirstName, 5, 8)
                 .Build();
 
             // act
@@ -1651,7 +1651,7 @@ namespace Validatum.Tests
             Assert.NotNull(brokenRule);
             Assert.Equal("Length", brokenRule.Rule);
             Assert.Equal("FirstName", brokenRule.Key);
-            Assert.Equal("Value must have minimum length of 5.", brokenRule.Message);
+            Assert.Equal("Value must be 5 to 8 characters in length.", brokenRule.Message);
         }
 
         [Fact]
@@ -1659,7 +1659,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .Length(e => e.FirstName, 5)
+                .Length(e => e.FirstName, 5, 8)
                 .Build();
 
             // act
@@ -1670,7 +1670,7 @@ namespace Validatum.Tests
             Assert.NotNull(brokenRule);
             Assert.Equal("Length", brokenRule.Rule);
             Assert.Equal("FirstName", brokenRule.Key);
-            Assert.Equal("Value must have minimum length of 5.", brokenRule.Message);
+            Assert.Equal("Value must be 5 to 8 characters in length.", brokenRule.Message);
         }
 
         [Fact]
@@ -1689,7 +1689,7 @@ namespace Validatum.Tests
             Assert.NotNull(brokenRule);
             Assert.Equal("Length", brokenRule.Rule);
             Assert.Equal("FirstName", brokenRule.Key);
-            Assert.Equal("Value must not exceed maximum length of 7.", brokenRule.Message);
+            Assert.Equal("Value must be 5 to 7 characters in length.", brokenRule.Message);
         }
 
         [Fact]
@@ -1697,7 +1697,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .Length(e => e.FirstName, 4)
+                .Length(e => e.FirstName, 4, 7)
                 .Build();
 
             // act
@@ -1742,7 +1742,7 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .Length(e => e.FirstName, 8, key: "test")
+                .Length(e => e.FirstName, 8, 12, key: "test")
                 .Build();
 
             // act
@@ -1758,11 +1758,501 @@ namespace Validatum.Tests
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
-                .Length(e => e.FirstName, 8, message: "test")
+                .Length(e => e.FirstName, 8, 12, message: "test")
                 .Build();
 
             // act
             var result = validator.Validate(new Employee { FirstName = "William" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MinLength_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.MinLength(null, 0);
+            });
+        }
+
+        [Fact]
+        public void MinLength_ThrowsException_WhenMinLessThanZero()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>("min", () =>
+            {
+                ValidatorBuilderExtensions.MinLength(new ValidatorBuilder<string>(), -1);
+            });
+        }
+
+        [Fact]
+        public void MinLength_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MinLength(5)
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("MinLength", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must have minimum length of 5.", brokenRule.Message);
+        }
+        
+        [Fact]
+        public void MinLength_ShouldAddBrokenRule_WhenValueLengthIsLessThanMin()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MinLength(5)
+                .Build();
+
+            // act
+            var result = validator.Validate("plan");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("MinLength", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must have minimum length of 5.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MinLength_ShouldNotAddBrokenRule_WhenValueLengthEqualsMin()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MinLength(5)
+                .Build();
+
+            // act
+            var result = validator.Validate("plant");
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MinLength_ShouldNotAddBrokenRule_WhenValueLengthGreaterThanMin()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MinLength(5)
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MinLength_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MinLength(8, key: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void MinLength_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MinLength(8, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MinLengthFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.MinLength<Employee>(null, null, 0);
+            });
+        }
+
+        [Fact]
+        public void MinLengthFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.MinLength(new ValidatorBuilder<Employee>(), null, 0);
+            });
+        }
+
+        [Fact]
+        public void MinLengthFor_ThrowsException_WhenMinLessThanZero()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>("min", () =>
+            {
+                ValidatorBuilderExtensions.MinLength(new ValidatorBuilder<Employee>(), e => e.FirstName, -1);
+            });
+        }
+
+        [Fact]
+        public void MinLengthFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MinLength(e => e.FirstName, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("MinLength", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must have minimum length of 5.", brokenRule.Message);
+        }
+        
+        [Fact]
+        public void MinLengthFor_ShouldAddBrokenRule_WhenValueLengthIsLessThanMin()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MinLength(e => e.FirstName, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Bill" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("MinLength", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must have minimum length of 5.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MinLengthFor_ShouldNotAddBrokenRule_WhenValueLengthEqualsMin()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MinLength(e => e.FirstName, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Marge" });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MinLengthFor_ShouldNotAddBrokenRule_WhenValueLengthGreaterThanMin()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MinLength(e => e.FirstName, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Margory" });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MinLengthFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MinLength(e => e.FirstName, 8, key: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void MinLengthFor_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MinLength(e => e.FirstName, 8, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MaxLength_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.MaxLength(null, 0);
+            });
+        }
+
+        [Fact]
+        public void MaxLength_ThrowsException_WhenMaxLessThanZero()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>("max", () =>
+            {
+                ValidatorBuilderExtensions.MaxLength(new ValidatorBuilder<string>(), -1);
+            });
+        }
+
+        [Fact]
+        public void MaxLength_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MaxLength(5)
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("MaxLength", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must have maximum length of 5.", brokenRule.Message);
+        }
+        
+        [Fact]
+        public void MaxLength_ShouldAddBrokenRule_WhenValueLengthIsGreaterThanMax()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MaxLength(5)
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("MaxLength", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must have maximum length of 5.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MaxLength_ShouldNotAddBrokenRule_WhenValueLengthEqualsMax()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MaxLength(5)
+                .Build();
+
+            // act
+            var result = validator.Validate("plant");
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MaxLength_ShouldNotAddBrokenRule_WhenValueLengthLessThanMax()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MaxLength(5)
+                .Build();
+
+            // act
+            var result = validator.Validate("plan");
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MaxLength_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MaxLength(5, key: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void MaxLength_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .MaxLength(5, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("planet");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MaxLengthFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.MaxLength<Employee>(null, null, 0);
+            });
+        }
+
+        [Fact]
+        public void MaxLengthFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.MaxLength(new ValidatorBuilder<Employee>(), null, 0);
+            });
+        }
+
+        [Fact]
+        public void MaxLengthFor_ThrowsException_WhenMaxLessThanZero()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>("max", () =>
+            {
+                ValidatorBuilderExtensions.MaxLength(new ValidatorBuilder<Employee>(), e => e.FirstName, -1);
+            });
+        }
+
+        [Fact]
+        public void MaxLengthFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MaxLength(e => e.FirstName, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("MaxLength", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must have maximum length of 5.", brokenRule.Message);
+        }
+        
+        [Fact]
+        public void MaxLengthFor_ShouldAddBrokenRule_WhenValueLengthIsGreaterThanMax()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MaxLength(e => e.FirstName, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "William" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("MaxLength", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must have maximum length of 5.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void MaxLengthFor_ShouldNotAddBrokenRule_WhenValueLengthEqualsMax()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MaxLength(e => e.FirstName, 5)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Marge" });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MaxLengthFor_ShouldNotAddBrokenRule_WhenValueLengthLessThanMax()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MaxLength(e => e.FirstName, 8)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Marge" });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void MaxLengthFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MaxLength(e => e.FirstName, 8, key: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void MaxLengthFor_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .MaxLength(e => e.FirstName, 8, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
             var brokenRule = result.BrokenRules.FirstOrDefault();
 
             // assert

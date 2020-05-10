@@ -409,14 +409,14 @@ namespace Validatum
         }
 
         /// <summary>
-        /// Adds a validator to ensure the value is of a specified minimum and optionally maximum length.
+        /// Adds a validator to ensure the value length is within a specified range.
         /// </summary>
         /// <param name="builder">The validation builder.</param>
         /// <param name="min">The minimum length.</param>
-        /// <param name="max">The maximum length (optional).</param>
+        /// <param name="max">The maximum length.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<string> Length(this IValidatorBuilder<string> builder, int min, int? max = null, string key = null, string message = null)
+        public static IValidatorBuilder<string> Length(this IValidatorBuilder<string> builder, int min, int max, string key = null, string message = null)
         {
             if (builder is null)
             {
@@ -428,37 +428,33 @@ namespace Validatum
                 throw new ArgumentOutOfRangeException(nameof(min), min, "Cannot be less than zero.");
             }
 
-            if (max.HasValue && min > max)
+            if (min > max)
             {
                 throw new ArgumentOutOfRangeException(nameof(min), min, $"Cannot be greater than max parameter (max '{max}').");
             }
 
             return builder
                 .When(
-                    ctx => ctx.Value is null || ctx.Value?.Length < min,
-                    ctx => ctx.AddBrokenRule(nameof(Length), key, message ?? $"Value must have minimum length of {min}.")
-                )
-                .When(
-                    ctx => max.HasValue && ctx.Value?.Length > max,
-                    ctx => ctx.AddBrokenRule(nameof(Length), key, message ?? $"Value must not exceed maximum length of {max}.")
+                    ctx => ctx.Value is null || ctx.Value?.Length < min || ctx.Value?.Length > max,
+                    ctx => ctx.AddBrokenRule(nameof(Length), key, message ?? $"Value must be {min} to {max} characters in length.")
                 );
         }
 
         /// <summary>
-        /// Adds a validator to ensure the value is of a specified minimum and optionally maximum length
+        /// Adds a validator to ensure the value length is within a specified range.
         /// for the target of the selector expression.
         /// </summary>
         /// <param name="builder">The validation builder.</param>
         /// <param name="selector">The selector expression.</param>
         /// <param name="min">The minimum length.</param>
-        /// <param name="max">The maximum length (optional).</param>
+        /// <param name="max">The maximum length.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> Length<T>(this IValidatorBuilder<T> builder, 
-            Expression<Func<T, string>> selector,           
-            int min, 
-            int? max = null, 
-            string key = null, 
+        public static IValidatorBuilder<T> Length<T>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, string>> selector,
+            int min,
+            int max,
+            string key = null,
             string message = null)
         {
             if (builder is null)
@@ -476,7 +472,7 @@ namespace Validatum
                 throw new ArgumentOutOfRangeException(nameof(min), min, "Cannot be less than zero.");
             }
 
-            if (max.HasValue && min > max)
+            if (min > max)
             {
                 throw new ArgumentOutOfRangeException(nameof(min), min, $"Cannot be greater than max parameter (max '{max}').");
             }
@@ -484,6 +480,122 @@ namespace Validatum
             key = key ?? selector.GetPropertyPath();
 
             return builder.For<T, string>(selector, p => p.Length(min, max, key, message));
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is of a minimum length.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="min">The minimum length.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<string> MinLength(this IValidatorBuilder<string> builder, int min, string key = null, string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (min < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(min), min, "Cannot be less than zero.");
+            }
+
+            return builder
+                .When(
+                    ctx => ctx.Value is null || ctx.Value?.Length < min,
+                    ctx => ctx.AddBrokenRule(nameof(MinLength), key, message ?? $"Value must have minimum length of {min}.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is of a minimum length for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="min">The minimum length.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> MinLength<T>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, string>> selector,
+            int min,
+            string key = null,
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            if (min < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(min), min, "Cannot be less than zero.");
+            }
+
+            return builder.For<T, string>(selector, p => p.MinLength(min, key, message));
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is not longer than maximum length.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="max">The maximum length.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<string> MaxLength(this IValidatorBuilder<string> builder, int max, string key = null, string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (max < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(max), max, "Cannot be less than zero.");
+            }
+
+            return builder
+                .When(
+                    ctx => ctx.Value is null || ctx.Value?.Length > max,
+                    ctx => ctx.AddBrokenRule(nameof(MaxLength), key, message ?? $"Value must have maximum length of {max}.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is of a maximum length for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="max">The maximum length.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> MaxLength<T>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, string>> selector,
+            int max,
+            string key = null,
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            if (max < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(max), max, "Cannot be less than zero.");
+            }
+
+            return builder.For<T, string>(selector, p => p.MaxLength(max, key, message));
         }
     }
 }
