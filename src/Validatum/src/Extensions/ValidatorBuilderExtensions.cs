@@ -152,7 +152,9 @@ namespace Validatum
         /// <param name="builder">The validator builder.</param>
         /// <param name="predicate">The predicate.</param>
         /// <param name="func">The function to execute.</param>
-        public static IValidatorBuilder<T> When<T>(this IValidatorBuilder<T> builder, Func<ValidationContext<T>, bool> predicate, ValidatorDelegate<T> func)
+        public static IValidatorBuilder<T> When<T>(this IValidatorBuilder<T> builder,
+            Func<ValidationContext<T>, bool> predicate,
+            ValidatorDelegate<T> func)
         {
             if (builder is null)
             {
@@ -185,7 +187,9 @@ namespace Validatum
         /// <param name="builder">The validator builder.</param>
         /// <param name="predicate">The predicate.</param>
         /// <param name="func">The function to execute.</param>
-        public static IValidatorBuilder<T> WhenNot<T>(this IValidatorBuilder<T> builder, Func<ValidationContext<T>, bool> predicate, ValidatorDelegate<T> func)
+        public static IValidatorBuilder<T> WhenNot<T>(this IValidatorBuilder<T> builder,
+            Func<ValidationContext<T>, bool> predicate,
+            ValidatorDelegate<T> func)
         {
             if (builder is null)
             {
@@ -213,15 +217,23 @@ namespace Validatum
         }
 
         /// <summary>
-        /// Continues validation if the current validation context is valid.
+        /// Executes validation if the predicate function is true.
         /// </summary>
         /// <param name="builder">The valiator builder.</param>
-        /// <param name="func">The continue function.</param>
-        public static IValidatorBuilder<T> Continue<T>(this IValidatorBuilder<T> builder, Action<IValidatorBuilder<T>> func)
+        /// <param name="predicate">The predicate function.</param>
+        /// <param name="func">The if builder function.</param>
+        public static IValidatorBuilder<T> If<T>(this IValidatorBuilder<T> builder,
+            Func<ValidationContext<T>, bool> predicate,
+            Action<IValidatorBuilder<T>> func)
         {
             if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
             }
 
             if (func is null)
@@ -229,19 +241,27 @@ namespace Validatum
                 throw new ArgumentNullException(nameof(func));
             }
 
-            var continueBuilder = new ValidatorBuilder<T>();
-            func(continueBuilder);
-            var continueValidator = continueBuilder.Build();
+            var ifBuilder = new ValidatorBuilder<T>();
+            func(ifBuilder);
+            var ifValidator = ifBuilder.Build();
             
             return builder
                 .When(
-                    ctx => ctx.IsValid,
+                    ctx => predicate(ctx),
                     ctx =>
                     {
-                        var result = continueValidator.Validate(ctx.Value, ctx.Options);
+                        var result = ifValidator.Validate(ctx.Value, ctx.Options);
                         ctx.AddBrokenRules(result.BrokenRules.ToArray());
                     });
         }
+
+        /// <summary>
+        /// Continue executing validation if the current validation context is valid.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="func">The continue builder function.</param>
+        public static IValidatorBuilder<T> Continue<T>(this IValidatorBuilder<T> builder, Action<IValidatorBuilder<T>> func)
+            => If(builder, ctx => ctx.IsValid, func);
 
         /// <summary>
         /// Adds an external validator to the validator.
@@ -270,7 +290,7 @@ namespace Validatum
         }
 
         /// <summary>
-        /// Adds an external validator to the target of the selected expression.
+        /// Adds an external validator to the target of the selector expression.
         /// </summary>
         /// <param name="builder">The validator builder.</param>
         /// <param name="selector">The selector expression.</param>

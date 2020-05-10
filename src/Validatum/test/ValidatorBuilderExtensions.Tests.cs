@@ -505,6 +505,71 @@ namespace Validatum.Tests
         }
 
         [Fact]
+        public void If_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.If<string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void If_ThrowsException_WhenPredicateIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("predicate", () =>
+            {
+                ValidatorBuilderExtensions.If<string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void If_ThrowsException_WhenFuncIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("func", () =>
+            {
+                ValidatorBuilderExtensions.If<string>(new ValidatorBuilder<string>(), ctx => true, null);
+            });
+        }
+
+        [Fact]
+        public void If_ShouldExecuteBuilderFunction_WhenPredicateIsTrue()
+        {
+            // arrange
+            bool funcCalled = false;
+            var validator = new ValidatorBuilder<bool>()
+                .If(ctx => ctx.Value, v =>
+                {
+                    v.With(ctx => { funcCalled = true; });
+                })
+                .Build();
+            
+            // act
+            validator.Validate(true);
+            
+            // assert
+            Assert.True(funcCalled);
+        }
+
+        [Fact]
+        public void If_ShouldExecuteBuilderFunction_WhenPredicateIsFalse()
+        {
+            // arrange
+            bool funcCalled = false;
+            var validator = new ValidatorBuilder<bool>()
+                .If(ctx => ctx.Value, v =>
+                {
+                    v.With(ctx => { funcCalled = true; });
+                })
+                .Build();
+            
+            // act
+            validator.Validate(false);
+
+            // assert
+            Assert.False(funcCalled);
+        }
+
+        [Fact]
         public void Continue_ThrowsException_WhenBuilderIsNull()
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
