@@ -1298,5 +1298,114 @@ namespace Validatum.Tests
             // assert
             Assert.Equal("test", brokenRule.Message);
         }
+
+        [Fact]
+        public void Compare_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Compare<string, string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void Compare_ThrowsException_WhenLeftSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("leftSelector", () =>
+            {
+                ValidatorBuilderExtensions.Compare<string, string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void Compare_ThrowsException_WhenRightSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("rightSelector", () =>
+            {
+                ValidatorBuilderExtensions.Compare<Employee, string>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void Compare_ShouldAddBrokenRule_WhenValuesAreNotEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Compare(e => e.FirstName, e => e.LastName)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            { 
+                FirstName = "William",
+                LastName = "Riker"
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Compare", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value must be equal to value of LastName", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Compare_ShouldNotAddBrokenRule_WhenValuesAreEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Compare(e => e.FirstName, e => e.LastName)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            { 
+                FirstName = "test",
+                LastName = "test"
+            });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void Compare_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Compare(e => e.FirstName, e => e.LastName, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            { 
+                FirstName = "William",
+                LastName = "Riker"
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void Compare_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Compare(e => e.FirstName, e => e.LastName, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee 
+            { 
+                FirstName = "William",
+                LastName = "Riker"
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }       
     }
 }

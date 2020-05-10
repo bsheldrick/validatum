@@ -292,5 +292,47 @@ namespace Validatum
             
             return builder.For(selector, p => p.Range(lower, upper, key, message));
         }
+
+        /// <summary>
+        /// Adds a value to compare two values from the targets of selector expressions are equal.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="leftSelector">The left selector expression.</param>
+        /// <param name="rightSelector">The right selector expression.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> Compare<T, P>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, P>> leftSelector,
+            Expression<Func<T, P>> rightSelector,
+            string key = null, 
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (leftSelector is null)
+            {
+                throw new ArgumentNullException(nameof(leftSelector));
+            }
+
+            if (rightSelector is null)
+            {
+                throw new ArgumentNullException(nameof(rightSelector));
+            }
+
+            var leftFunc = leftSelector.Compile();
+            var rightFunc = rightSelector.Compile();
+
+            var leftKey = leftSelector.GetPropertyPath();
+            var rightKey = rightSelector.GetPropertyPath();
+            
+            return builder.
+                WhenNot(
+                    ctx => leftFunc(ctx.Value)?.Equals(rightFunc(ctx.Value)) ?? false,
+                    ctx => ctx.AddBrokenRule(nameof(Compare), key ?? leftKey, message ?? $"Value must be equal to value of {rightKey}")
+                );
+        }
     }
 }
