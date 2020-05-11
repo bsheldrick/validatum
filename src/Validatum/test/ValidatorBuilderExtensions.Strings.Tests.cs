@@ -2258,5 +2258,425 @@ namespace Validatum.Tests
             // assert
             Assert.Equal("test", brokenRule.Message);
         }
+
+        [Fact]
+        public void Required_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Required(null);
+            });
+        }
+        
+        [Fact]
+        public void Required_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Required()
+                .Build();
+
+            // act
+            var result = validator.Validate(null);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Required", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value is required.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Required_ShouldAddBrokenRule_WhenValueIsEmpty()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Required()
+                .Build();
+
+            // act
+            var result = validator.Validate(string.Empty);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Required", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value is required.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Required_ShouldAddBrokenRule_WhenValueIsWhiteSpace()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Required()
+                .Build();
+
+            // act
+            var result = validator.Validate("   ");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Required", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value is required.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Required_ShouldNotAddBrokenRule_WhenValueIsProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Required()
+                .Build();
+
+            // act
+            var result = validator.Validate("test");
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+        
+        [Fact]
+        public void Required_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Required("test")
+                .Build();
+
+            // act
+            var result = validator.Validate(string.Empty);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void Required_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Required(message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(string.Empty);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RequiredFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Required<string>(null, null);
+            });
+        }
+
+        [Fact]
+        public void RequiredFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.Required<string>(new ValidatorBuilder<string>(), null);
+            });
+        }
+        
+        [Fact]
+        public void RequiredFor_ShouldAddBrokenRule_WhenValueIsNull()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Required(e => e.FirstName)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Required", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value is required.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RequiredFor_ShouldAddBrokenRule_WhenValueIsEmpty()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Required(e => e.FirstName)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "" });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Required", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value is required.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RequiredFor_ShouldAddBrokenRule_WhenValueIsWhiteSpace()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Required(e => e.FirstName)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "  " });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Required", brokenRule.Rule);
+            Assert.Equal("FirstName", brokenRule.Key);
+            Assert.Equal("Value is required.", brokenRule.Message);
+        }
+
+        [Fact]
+        public void RequiredFor_ShouldNotAddBrokenRule_WhenValueIsProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Required(e => e.FirstName)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { FirstName = "Bob" });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+        
+        [Fact]
+        public void RequiredFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Required(e => e.FirstName, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void RequiredFor_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Required(e => e.FirstName, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void Email_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Email(null);
+            });
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("@")]
+        [InlineData("b@")]
+        [InlineData("@x")]
+        [InlineData("notanemail.com")]
+        [InlineData("@nocharsbeforeat.com")]
+        [InlineData("has@two@ats.com")]
+        [InlineData("double@periods..com")]
+        [InlineData("no@white space.com")]
+        public void Email_ShouldAddBrokenRule_WhenValueIsInvalidEmail(string email)
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Email()
+                .Build();
+
+            // act
+            var result = validator.Validate(email);
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Email", brokenRule.Rule);
+            Assert.Equal("String", brokenRule.Key);
+            Assert.Equal("Value must be a valid email.", brokenRule.Message);
+        }
+
+        [Theory]
+        [InlineData("test@example.com")]
+        [InlineData("test@example.com.au")]
+        [InlineData("test.1@example.com")]
+        [InlineData("test+name@example.com")]
+        public void Email_ShouldNotAddBrokenRule_WhenValueIsValidEmail(string email)
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Email()
+                .Build();
+
+            // act
+            var result = validator.Validate(email);
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+        
+        [Fact]
+        public void Email_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Email("test")
+                .Build();
+
+            // act
+            var result = validator.Validate("nope");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void Email_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<string>()
+                .Email(message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate("nope");
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void EmailFor_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.Email<string>(null, null);
+            });
+        }
+
+        [Fact]
+        public void EmailFor_ThrowsException_WhenSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("selector", () =>
+            {
+                ValidatorBuilderExtensions.Email<string>(new ValidatorBuilder<string>(), null);
+            });
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("@")]
+        [InlineData("b@")]
+        [InlineData("@x")]
+        [InlineData("notanemail.com")]
+        [InlineData("@nocharsbeforeat.com")]
+        [InlineData("has@two@ats.com")]
+        [InlineData("double@periods..com")]
+        [InlineData("no@white space.com")]
+        public void EmailFor_ShouldAddBrokenRule_WhenValueIsInvalidEmail(string email)
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Email(e => e.Email)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Email = email });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Email", brokenRule.Rule);
+            Assert.Equal("Email", brokenRule.Key);
+            Assert.Equal("Value must be a valid email.", brokenRule.Message);
+        }
+
+        [Theory]
+        [InlineData("test@example.com")]
+        [InlineData("test@example.com.au")]
+        [InlineData("test.1@example.com")]
+        [InlineData("test+name@example.com")]
+        public void EmailFor_ShouldNotAddBrokenRule_WhenValueIsValidEmail(string email)
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Email(e => e.Email)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee { Email = email });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+        
+        [Fact]
+        public void EmailFor_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Email(e => e.Email, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void EmailFor_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .Email(e => e.Email, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee());
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
     }
 }

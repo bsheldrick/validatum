@@ -597,5 +597,104 @@ namespace Validatum
 
             return builder.For<T, string>(selector, p => p.MaxLength(max, key, message));
         }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is not null or empty or whitespace.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<string> Required(this IValidatorBuilder<string> builder, string key = null, string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            return builder
+                .When(
+                    ctx => string.IsNullOrWhiteSpace(ctx.Value),
+                    ctx => ctx.AddBrokenRule(nameof(Required), key, message ?? $"Value is required.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is not null or empty or whitespace for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> Required<T>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, string>> selector,
+            string key = null,
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            key = key ?? selector.GetPropertyPath();
+
+            return builder.For<T, string>(selector, p => p.Required(key, message));
+        }
+
+        private static readonly System.Text.RegularExpressions.Regex EmailRegex 
+            = new System.Text.RegularExpressions.Regex(
+                @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$", 
+                RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+
+        /// <summary>
+        /// Adds a validator to ensure the value is an email address.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<string> Email(this IValidatorBuilder<string> builder, string key = null, string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            return builder
+                .WhenNot(
+                    ctx => EmailRegex.IsMatch(ctx.Value ?? string.Empty),
+                    ctx => ctx.AddBrokenRule(nameof(Email), key, message ?? $"Value must be a valid email.")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value is an email address for the target of the selector expression.
+        /// </summary>
+        /// <param name="builder">The validation builder.</param>
+        /// <param name="selector">The selector expression.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> Email<T>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, string>> selector,
+            string key = null,
+            string message = null)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (selector is null)
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            key = key ?? selector.GetPropertyPath();
+
+            return builder.For<T, string>(selector, p => p.Email(key, message));
+        }
     }
 }
