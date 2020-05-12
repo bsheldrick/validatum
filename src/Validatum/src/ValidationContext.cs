@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -56,12 +57,20 @@ namespace Validatum
         public bool CanContinue => IsValid || (!IsValid && !Options.StopWhenInvalid);
 
         /// <summary>
-        /// Adds a collection of broken rules to the context.
+        /// Merges a validation result into this context.
         /// </summary>
-        /// <param name="rules">The broken rules to add.</param>
-        public void AddBrokenRules(params BrokenRule[] rules)
+        /// <param name="result">The validation result.</param>
+        public void Merge(ValidationResult result)
         {
-            _brokenRules.AddRange(rules);
+            if (result is null)
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
+
+            foreach (var rule in result.BrokenRules)
+            {
+                AddBrokenRule(rule.Rule, rule.Key, rule.Message);
+            }
         }
 
         /// <summary>

@@ -80,7 +80,7 @@ namespace Validatum
                         var value = selectorFunc(ctx.Value);
                         var result = propValidator.Validate(value, ctx.Options);
 
-                        ctx.AddBrokenRules(result.BrokenRules.ToArray());
+                        ctx.Merge(result);
                     }
                     catch (NullReferenceException ex) when (ctx.Options.AddBrokenRuleForException)
                     {
@@ -251,7 +251,8 @@ namespace Validatum
                     ctx =>
                     {
                         var result = ifValidator.Validate(ctx.Value, ctx.Options);
-                        ctx.AddBrokenRules(result.BrokenRules.ToArray());
+
+                        ctx.Merge(result);
                     });
         }
 
@@ -285,7 +286,7 @@ namespace Validatum
                 {
                     var result = validator.Validate(ctx.Value, ctx.Options);
 
-                    ctx.AddBrokenRules(result.BrokenRules.ToArray());
+                    ctx.Merge(result);
                 });
         }
 
