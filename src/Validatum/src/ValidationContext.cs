@@ -7,7 +7,7 @@ namespace Validatum
     /// <summary>
     /// Encapsulates validation specific data.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type being validated.</typeparam>
     public sealed class ValidationContext<T>
     {
         private readonly List<BrokenRule> _brokenRules = new List<BrokenRule>();

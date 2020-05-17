@@ -1,53 +1,61 @@
-Validatum
-=========
+# Validatum
 
-Example
+Validatum is an open-source library for building pure fluent validation functions for .NET.
+
+
+## Install
+
+**.NET CLI**
+```cmd
+dotnet add package Validatum --version 1.0.0-rc.1
+```
+
+**Package Manager**
+```cmd
+Install-Package Validatum -Version 1.0.0-rc.1
+```
+
+
+## Example
 
 ```csharp
 // build a validator
 var validator = new ValidatorBuilder<Employee>()
-    // FirstName cannot be null, empty or whitespace
-    .Required(e => e.FirstName) 
-    // Email must be valid email address
-    .Email(e => e.Email) 
-    // Validator targeting LastName
-    .For(e => e.LastName, val => 
+    .Required(e => e.FirstName)
+    .Email(e => e.Email)
+    .For(e => e.LastName, name =>
     {
-        // must be at least 5 characters
-        val.MinLength(5);
-        // must be 'Flanders'
-        val.Equal("Flanders"); 
+        name.MinLength(5)
+            .Equal("Flanders");
     })
-    // Active must be true
-    .True(e => e.Active) 
-    // Continue validating only if valid
-    .Continue(val => 
-    {
-        // Phone cannot be null
-        val.NotNull(e => e.Phone, message: "We need your phone number");
-    })
-    // Custom validation function
-    .With(ctx =>
-    {
-        if (ctx.Value.LastName == "Simpson")
-        {
-            // broken rule (Rule, Key, Message)
-            ctx.AddBrokenRule("NoHomers", "LastName", "Nice try, Homer.");
-        }
-    })
-    // create the validator
-    .Build(); 
+    .Build();
 
 // validate
-var result = validator.Validate(new Employee 
-{ 
-    FirstName = "Homer",
-    LastName = "Simpson" 
-});
+var result = validator.Validate(
+    new Employee 
+    { 
+        LastName = "Simpson",
+        Email = "homer@springfieldnuclear..com"
+    }
+);
 
+// inspect the result
 if (!result.IsValid)
 {
-    // inspect the broken rules
+    foreach (var rule in result.BrokenRules)
+    {
+        Console.WriteLine($"[{rule.Rule}] {rule.Key}: {rule.Message}");
+    }
 
+    /* OUTPUT
+    [Required] FirstName: Value is required.
+    [Email] Email: Value must be a valid email.
+    [Equal] LastName: Value must equal 'Flanders'.
+    */
 }
+
 ```
+
+## Documentation
+
+Please visit https://bsheldrick.github.io/validatum
