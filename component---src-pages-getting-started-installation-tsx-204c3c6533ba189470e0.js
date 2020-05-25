@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[15],{qblf:function(e,n,t){"use strict";t.r(n);var a=t("q1tI"),l=t.n(a),r=t("9Dj+"),u=t("Wrew");n.default=function(){var e=Object(u.a)().nugetVersion;return l.a.createElement(r.a,null,l.a.createElement("h1",null,"Installation"),l.a.createElement("p",null,"Nuget: ",e))}}}]);
-//# sourceMappingURL=component---src-pages-getting-started-installation-tsx-204c3c6533ba189470e0.js.map

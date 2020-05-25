@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[14],{My72:function(n,e,t){"use strict";t.r(e);var a=t("q1tI"),o=t.n(a),u=t("9Dj+");e.default=function(){return o.a.createElement(u.a,null,o.a.createElement("h1",null,"Comparison Functions"))}}}]);
+//# sourceMappingURL=component---src-pages-functions-comparison-tsx-d618cc52b4eec6b26a7f.js.map

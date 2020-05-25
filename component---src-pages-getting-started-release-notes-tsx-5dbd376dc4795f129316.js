@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[16],{vHri:function(e,n,t){"use strict";t.r(n);var a=t("q1tI"),l=t.n(a),r=t("9Dj+");n.default=function(){return l.a.createElement(r.a,null,l.a.createElement("h1",null,"Release Notes"))}}}]);
-//# sourceMappingURL=component---src-pages-getting-started-release-notes-tsx-5dbd376dc4795f129316.js.map
