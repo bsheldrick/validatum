@@ -6,7 +6,7 @@ namespace Validatum
     /// A class that can validate values of a specified type.
     /// </summary>
     /// <typeparam name="T">The type of data being validated.</typeparam>
-    public class Validator<T>
+    public sealed class Validator<T>
     {
         private readonly ValidatorDelegate<T> _function;
 
@@ -15,7 +15,7 @@ namespace Validatum
         /// </summary>
         /// <param name="function">The root validator function.</param>
         /// <param name="label">The label to attach to the validator (optional).</param>
-        public Validator(ValidatorDelegate<T> function, string label = null)
+        internal Validator(ValidatorDelegate<T> function, string label = null)
         {
             _function = function ?? throw new ArgumentNullException(nameof(function));
             Label = label;
