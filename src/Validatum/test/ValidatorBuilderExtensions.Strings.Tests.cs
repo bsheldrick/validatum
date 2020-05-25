@@ -1322,7 +1322,7 @@ namespace Validatum.Tests
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
             {
-                ValidatorBuilderExtensions.Contains<string>(null, null, null);
+                ValidatorBuilderExtensions.Contains<string>(null, "test", null);
             });
         }
 
@@ -2033,7 +2033,7 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void MaxLength_ShouldAddBrokenRule_WhenValueIsNull()
+        public void MaxLength_ShouldNotAddBrokenRule_WhenValueIsNull()
         {
             // arrange
             var validator = new ValidatorBuilder<string>()
@@ -2045,10 +2045,7 @@ namespace Validatum.Tests
             var brokenRule = result.BrokenRules.FirstOrDefault();
 
             // assert
-            Assert.NotNull(brokenRule);
-            Assert.Equal("MaxLength", brokenRule.Rule);
-            Assert.Equal("String", brokenRule.Key);
-            Assert.Equal("Value must have maximum length of 5.", brokenRule.Message);
+            Assert.Null(brokenRule);
         }
         
         [Fact]
@@ -2160,7 +2157,7 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void MaxLengthFor_ShouldAddBrokenRule_WhenValueIsNull()
+        public void MaxLengthFor_ShouldNotAddBrokenRule_WhenValueIsNull()
         {
             // arrange
             var validator = new ValidatorBuilder<Employee>()
@@ -2172,10 +2169,7 @@ namespace Validatum.Tests
             var brokenRule = result.BrokenRules.FirstOrDefault();
 
             // assert
-            Assert.NotNull(brokenRule);
-            Assert.Equal("MaxLength", brokenRule.Rule);
-            Assert.Equal("FirstName", brokenRule.Key);
-            Assert.Equal("Value must have maximum length of 5.", brokenRule.Message);
+            Assert.Null(brokenRule);
         }
         
         [Fact]
@@ -2236,7 +2230,7 @@ namespace Validatum.Tests
                 .Build();
 
             // act
-            var result = validator.Validate(new Employee());
+            var result = validator.Validate(new Employee { FirstName = "morethan8" });
             var brokenRule = result.BrokenRules.FirstOrDefault();
 
             // assert
@@ -2252,7 +2246,7 @@ namespace Validatum.Tests
                 .Build();
 
             // act
-            var result = validator.Validate(new Employee());
+            var result = validator.Validate(new Employee { FirstName = "morethan8" });
             var brokenRule = result.BrokenRules.FirstOrDefault();
 
             // assert

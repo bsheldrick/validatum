@@ -561,7 +561,7 @@ namespace Validatum
 
             return builder
                 .When(
-                    ctx => ctx.Value is null || ctx.Value?.Length > max,
+                    ctx => ctx.Value?.Length > max,
                     ctx => ctx.AddBrokenRule(nameof(MaxLength), key, message ?? $"Value must have maximum length of {max}.")
                 );
         }
