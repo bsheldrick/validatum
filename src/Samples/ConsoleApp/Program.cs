@@ -5,25 +5,34 @@ namespace ConsoleApp
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var validator = new ValidatorBuilder<Employee>()
                 .Required(e => e.FirstName)
-                .Email(e => e.Email)
-                .For(e => e.LastName, name =>
+                .For(e => e.LastName, name => 
                 {
-                    name.MinLength(5)
-                        .Equal("Flanders");
+                    name.Required()
+                        .MaxLength(30);
+                })
+                .Email(e => e.Email)
+                .Contains(e => e.Skills, "Cromulent")
+                .Range(e => e.Salary, 50000, 100000)
+                .LessThanOrEqual(e => e.Commenced, DateTime.Today)
+                .Continue(v =>
+                {
+                    v.True(e => e.Active);
                 })
                 .Build();
 
-            var result = validator.Validate(
-                new Employee 
-                { 
-                    LastName = "Simpson",
-                    Email = "homer@springfieldnuclear..com"
-                }
-            );
+            var employee = new Employee
+            {
+                FirstName = "Homer",
+                Email = "homer[at]springfieldnuclear.com",
+                Salary = 45000,
+                Skills = new[] { "Embiggening" }
+            };
+
+            var result = validator.Validate(employee);
 
             if (!result.IsValid)
             {
@@ -31,14 +40,19 @@ namespace ConsoleApp
                 {
                     Console.WriteLine($"[{rule.Rule}] {rule.Key}: {rule.Message}");
                 }
-            }
+            };
         }
 
-        private class Employee
+        public class Employee
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public string Email { get; set; }
+            public string Phone { get; set; }
+            public string[] Skills { get; set; }
+            public decimal Salary { get; set; }
+            public DateTime Commenced { get; set; }
+            public bool Active { get; set; }
         }
     }
 }

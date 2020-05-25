@@ -10,11 +10,11 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Validatum</PackageId>
-    <Version>1.0.0-rc.2</Version>
+    <Version>1.0.0-rc.3</Version>
     <Authors>Brad Sheldrick</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Validation;Fluent;Builder</PackageTags>
-    <Description>A simple and fluent validation builder for .NET.</Description>
+    <Description>A library for building fluent validation functions for .NET.</Description>
     <Copyright>Brad Sheldrick</Copyright>
     <PackageProjectUrl>https://bsheldrick.github.io/validatum</PackageProjectUrl>
     <RepositoryUrl>https://github.com/bsheldrick/validatum</RepositoryUrl>
