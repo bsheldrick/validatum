@@ -7,12 +7,12 @@ Validatum is an open-source library for building fluent validation functions for
 
 **.NET CLI**
 ```cmd
-dotnet add package Validatum --version 1.0.0-rc.2
+dotnet add package Validatum --version 1.0.0-rc.3
 ```
 
 **Package Manager**
 ```cmd
-Install-Package Validatum -Version 1.0.0-rc.2
+Install-Package Validatum -Version 1.0.0-rc.3
 ```
 
 ## Platform Support
