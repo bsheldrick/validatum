@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[12],{ggo9:function(n,e,t){"use strict";t.r(e);var o=t("q1tI"),a=t.n(o),c=t("9Dj+");e.default=function(){return a.a.createElement(c.a,null,a.a.createElement("h1",null,"Collection Functions"))}}}]);
-//# sourceMappingURL=component---src-pages-functions-collection-tsx-9ce2c7131fd5157f81e8.js.map
