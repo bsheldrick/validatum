@@ -59,4 +59,4 @@ Output
 
 ## Documentation
 
-Please visit https://bsheldrick.github.io/validatum
+Please visit https://bsheldrick.github.io/validatum (Work In Progress)
