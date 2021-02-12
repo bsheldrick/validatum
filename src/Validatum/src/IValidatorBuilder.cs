@@ -18,6 +18,6 @@ namespace Validatum
         /// Adds a function to the validator.
         /// </summary>
         /// <param name="func">The function.</param>
-        IValidatorBuilder<T> With(Action<ValidationContext<T>, ValidatorDelegate<T>> func);
+        IValidatorBuilder<T> With(ValidatorDelegate<T> func);
     }
 }

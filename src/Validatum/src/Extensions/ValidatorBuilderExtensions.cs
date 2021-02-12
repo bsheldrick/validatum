@@ -11,35 +11,6 @@ namespace Validatum
     public static partial class ValidatorBuilderExtensions
     {
         /// <summary>
-        /// Adds a delegate to the validator.
-        /// </summary>
-        /// <param name="builder">The validator builder.</param>
-        /// <param name="func">The delegate function.</param>
-        public static IValidatorBuilder<T> With<T>(this IValidatorBuilder<T> builder, ValidatorDelegate<T> func)
-        {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (func is null)
-            {
-                throw new ArgumentNullException(nameof(func));
-            }
-
-            return builder
-                .With((ctx, next) => 
-                {
-                    func(ctx);
-
-                    if (ctx.CanContinue)
-                    {
-                        next(ctx);
-                    }
-                });
-        }
-
-        /// <summary>
         /// Adds a validator function targeting the type <see paramref="P"/> from the source object <see paramref="T"/>.
         /// </summary>
         /// <param name="builder">The validator builder.</param>
@@ -82,11 +53,17 @@ namespace Validatum
 
                         ctx.Merge(result);
                     }
-                    catch (NullReferenceException ex) when (ctx.Options.AddBrokenRuleForException)
+                    catch (Exception ex) when (!(ex is ValidationException))
                     {
-                        ctx.AddBrokenRule(nameof(NullReferenceException), label, ex.Message);
+                        if (ctx.Options.AddBrokenRuleForException)
+                        {
+                            ctx.AddBrokenRule(ex.GetType().Name, label, ex.Message);
+                        }
+                        else
+                        {
+                            throw new ValidationException(ex.Message, ex);
+                        }
                     }
-                    catch {}
                 });
         }
 
@@ -96,7 +73,7 @@ namespace Validatum
         /// <param name="builder">The validator builder.</param>
         /// <param name="selector">The selector expression.</param>
         /// <param name="func">The validator builder function.</param>
-        public static IValidatorBuilder<T> ForEach<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> ForEach<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, IEnumerable<P>>> selector,
             Action<IValidatorBuilder<P>> func)
         {
@@ -122,7 +99,7 @@ namespace Validatum
             var itemValidator = itemValidatorBuilder.Build(label);
 
             return builder
-                .With(ctx => 
+                .With(ctx =>
                 {
                     try
                     {
@@ -138,14 +115,20 @@ namespace Validatum
                             }
                         }
                     }
-                    catch (NullReferenceException ex) when (ctx.Options.AddBrokenRuleForException)
+                    catch (Exception ex) when (!(ex is ValidationException))
                     {
-                        ctx.AddBrokenRule(nameof(NullReferenceException), label, ex.Message);
+                        if (ctx.Options.AddBrokenRuleForException)
+                        {
+                            ctx.AddBrokenRule(ex.GetType().Name, label, ex.Message);
+                        }
+                        else
+                        {
+                            throw new ValidationException(ex.Message, ex);
+                        }
                     }
-                    catch {}
                 });
         }
-        
+
         /// <summary>
         /// Adds a validator function that will execute when the predicate resolves to true.
         /// </summary>
@@ -172,7 +155,7 @@ namespace Validatum
             }
 
             return builder
-                .With(ctx => 
+                .With(ctx =>
                 {
                     if (predicate(ctx))
                     {
@@ -207,7 +190,7 @@ namespace Validatum
             }
 
             return builder
-                .With(ctx => 
+                .With(ctx =>
                 {
                     if (!predicate(ctx))
                     {
@@ -244,7 +227,7 @@ namespace Validatum
             var ifBuilder = new ValidatorBuilder<T>();
             func(ifBuilder);
             var ifValidator = ifBuilder.Build();
-            
+
             return builder
                 .When(
                     ctx => predicate(ctx),
@@ -282,7 +265,7 @@ namespace Validatum
             }
 
             return builder
-                .With(ctx => 
+                .With(ctx =>
                 {
                     var result = validator.Validate(ctx.Value, ctx.Options);
 
@@ -296,7 +279,7 @@ namespace Validatum
         /// <param name="builder">The validator builder.</param>
         /// <param name="selector">The selector expression.</param>
         /// <param name="validator">The external validator.</param>
-        public static IValidatorBuilder<T> Validator<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> Validator<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> selector,
             Validator<P> validator)
         {

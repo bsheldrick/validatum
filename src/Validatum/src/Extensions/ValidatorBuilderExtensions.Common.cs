@@ -21,7 +21,7 @@ namespace Validatum
 
             return builder
                 .When(
-                    ctx => ctx.Value is null, 
+                    ctx => ctx.Value is null,
                     ctx => ctx.AddBrokenRule(nameof(NotNull), key, message ?? "Value cannot be null.")
                 );
         }
@@ -35,11 +35,10 @@ namespace Validatum
         /// <param name="message">The message to use in broken rule.</param>
         /// <typeparam name="T">The source type.</typeparam>
         /// <typeparam name="P">The target type.</typeparam>
-        public static IValidatorBuilder<T> NotNull<T, P>(this IValidatorBuilder<T> builder, 
-            Expression<Func<T, P>> selector, 
+        public static IValidatorBuilder<T> NotNull<T, P>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, P>> selector,
             string key = null,
             string message = null)
-            where T : class
             where P : class
         {
             if (builder is null)
@@ -87,11 +86,10 @@ namespace Validatum
         /// <param name="message">The message to use in broken rule.</param>
         /// <typeparam name="T">The source type.</typeparam>
         /// <typeparam name="P">The target type.</typeparam>
-        public static IValidatorBuilder<T> Null<T, P>(this IValidatorBuilder<T> builder, 
-            Expression<Func<T, P>> selector, 
+        public static IValidatorBuilder<T> Null<T, P>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, P>> selector,
             string key = null,
             string message = null)
-            where T : class
             where P : class
         {
             if (builder is null)
@@ -141,7 +139,7 @@ namespace Validatum
         /// <param name="message">The message to use in broken rule.</param>
         /// <typeparam name="T">The source type.</typeparam>
         /// <typeparam name="P">The target type.</typeparam>
-        public static IValidatorBuilder<T> Equal<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> Equal<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> selector,
             P other,
             string key = null,
@@ -195,7 +193,7 @@ namespace Validatum
         /// <param name="message">The message to use in broken rule.</param>
         /// <typeparam name="T">The source type.</typeparam>
         /// <typeparam name="P">The target type.</typeparam>
-        public static IValidatorBuilder<T> NotEqual<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> NotEqual<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> selector,
             P other,
             string key = null,

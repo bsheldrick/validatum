@@ -9,34 +9,43 @@ namespace Validatum
     /// <typeparam name="T">The type being validated.</typeparam>
     public sealed class ValidatorBuilder<T> : IValidatorBuilder<T>
     {
-        private readonly Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>> _delegates 
+        private readonly Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>> _delegates
             = new Stack<Func<ValidatorDelegate<T>, ValidatorDelegate<T>>>();
 
-        private static readonly Func<ValidatorDelegate<T>, ValidatorDelegate<T>> Run = next => ctx => 
+        private static readonly Func<ValidatorDelegate<T>, ValidatorDelegate<T>> Run = next => ctx =>
         {
-            try
-            {
-                next(ctx);
+            next(ctx);
 
-                if (!ctx.IsValid && ctx.Options.ThrowWhenInvalid)
-                {
-                    throw new ValidationException(ctx.BrokenRules);
-                }
-            }
-            catch (Exception ex) when (!(ex is ValidationException))
+            if (!ctx.IsValid && ctx.Options.ThrowWhenInvalid)
             {
-                throw new ValidationException(ex.Message, ex);
+                throw new ValidationException(ctx.BrokenRules);
             }
         };
 
         private Validator<T> _validator;
+
+        private void AddDelegate(Action<ValidationContext<T>, ValidatorDelegate<T>> func)
+        {
+            if (func is null)
+            {
+                throw new ArgumentNullException(nameof(func));
+            }
+
+            _delegates.Push(next => ctx =>
+            {
+                if (ctx.CanContinue)
+                {
+                    func(ctx, next);
+                }
+            });
+        }
 
         /// <inheritdoc/>
         public Validator<T> Build(string label = null)
         {
             if (_validator is null)
             {
-                ValidatorDelegate<T> validator = ctx => {};
+                ValidatorDelegate<T> validator = ctx => { };
 
                 while (_delegates.Count > 0)
                 {
@@ -53,18 +62,34 @@ namespace Validatum
         }
 
         /// <inheritdoc/>
-        public IValidatorBuilder<T> With(Action<ValidationContext<T>, ValidatorDelegate<T>> func)
+        public IValidatorBuilder<T> With(ValidatorDelegate<T> func)
         {
             if (func is null)
             {
                 throw new ArgumentNullException(nameof(func));
             }
 
-            _delegates.Push(next => ctx => 
+            AddDelegate((ctx, next) =>
             {
+                try
+                {
+                    func(ctx);
+                }
+                catch (Exception ex) when (!(ex is ValidationException))
+                {
+                    if (ctx.Options.AddBrokenRuleForException)
+                    {
+                        ctx.AddBrokenRule(ex.GetType().Name, ctx.Label, ex.Message);
+                    }
+                    else
+                    {
+                        throw new ValidationException(ex.Message, ex);
+                    }
+                }
+
                 if (ctx.CanContinue)
                 {
-                    func(ctx, next);
+                    next(ctx);
                 }
             });
 

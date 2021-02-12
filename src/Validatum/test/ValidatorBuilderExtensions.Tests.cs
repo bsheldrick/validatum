@@ -7,47 +7,6 @@ namespace Validatum.Tests
     public class ValidatorBuilderExtensionsTests
     {
         [Fact]
-        public void With_ThrowsException_WhenBuilderIsNull()
-        {
-            Assert.Throws<ArgumentNullException>("builder", () =>
-            {
-                ValidatorBuilderExtensions.With<string>(null, null);
-            });
-        }
-
-        [Fact]
-        public void With_ThrowsException_WhenFuncIsNull()
-        {
-            Assert.Throws<ArgumentNullException>("func", () =>
-            {
-                ValidatorBuilderExtensions.With<string>(new ValidatorBuilder<string>(), null);
-            });
-        }
-
-        [Fact]
-        public void With_ShouldAddToDelegateChain()
-        {
-            // arrange
-            int callCount = 0;
-            var builder = new ValidatorBuilder<string>()
-                .With(ctx => 
-                {
-                    callCount++;
-                })
-                .With(ctx => 
-                {
-                    callCount++;
-                });
-            var validator = builder.Build();
-
-            // act
-            var result = validator.Validate("test");
-
-            // assert
-            Assert.Equal(2, callCount);
-        }
-
-        [Fact]
         public void For_ThrowsException_WhenBuilderIsNull()
         {
             Assert.Throws<ArgumentNullException>("builder", () =>
@@ -86,7 +45,7 @@ namespace Validatum.Tests
             };
 
             var builder = new ValidatorBuilder<Employee>();
-            builder.For(e => e.Manager, v => 
+            builder.For(e => e.Manager, v =>
             {
                 v.With(ctx => { label = ctx.Label; });
             });
@@ -111,7 +70,7 @@ namespace Validatum.Tests
             };
 
             var builder = new ValidatorBuilder<Employee>();
-            builder.For(e => e.Manager, v => 
+            builder.For(e => e.Manager, v =>
             {
                 v.With(ctx => { toValidate = ctx.Value; });
             });
@@ -136,7 +95,7 @@ namespace Validatum.Tests
             };
 
             var builder = new ValidatorBuilder<Employee>();
-            builder.For(e => e.Manager, v => 
+            builder.For(e => e.Manager, v =>
             {
                 v.With(ctx => { valOptions = ctx.Options; });
             });
@@ -161,13 +120,13 @@ namespace Validatum.Tests
             };
 
             var builder = new ValidatorBuilder<Employee>();
-            builder.For(e => e.Employer.Name, v => {});
+            builder.For(e => e.Employer.Name, v => { });
             var validator = builder.Build();
 
             // act
             var result = validator.Validate(employee);
             var brokenRule = result.BrokenRules.FirstOrDefault();
-            
+
             // assert
             Assert.NotNull(brokenRule);
             Assert.Equal("NullReferenceException", brokenRule.Rule);
@@ -176,7 +135,7 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void For_ShouldNotAddBrokenRule_WhenTargetExpression_CannotBeResolved_AndAddBrokenRuleOnException_IsFalse()
+        public void For_ShouldNotAddBrokenRule_WhenTargetExpressionCannotBeResolved_AndAddBrokenRuleOnExceptionIsFalse()
         {
             // arrange
             var employee = new Employee
@@ -186,15 +145,24 @@ namespace Validatum.Tests
             };
 
             var builder = new ValidatorBuilder<Employee>();
-            builder.For(e => e.Employer.Name, v => {});
+            builder.For(e => e.Employer.Name, v => { });
             var validator = builder.Build();
 
-            // act
-            var options = new ValidationOptions { AddBrokenRuleForException = false };
-            var result = validator.Validate(employee, options);
-            
             // assert
-            Assert.Empty(result.BrokenRules);
+            Assert.Throws<ValidationException>(() =>
+            {
+                try
+                {
+                    // act
+                    validator.Validate(employee, new ValidationOptions { AddBrokenRuleForException = false });
+                }
+                catch (ValidationException ex)
+                {
+
+                    Assert.IsType<NullReferenceException>(ex.InnerException);
+                    throw ex;
+                }
+            });
         }
 
         [Fact]
@@ -209,7 +177,7 @@ namespace Validatum.Tests
             };
 
             var builder = new ValidatorBuilder<Employee>();
-            builder.For(e => e.Manager.FirstName, val => 
+            builder.For(e => e.Manager.FirstName, val =>
             {
                 val.With(ctx => { managerName = ctx.Value; });
             });
@@ -217,7 +185,7 @@ namespace Validatum.Tests
 
             // act
             var result = validator.Validate(employee);
-            
+
             // assert
             Assert.NotNull(managerName);
             Assert.Equal("Jane", managerName);
@@ -234,10 +202,10 @@ namespace Validatum.Tests
             };
 
             var validator = new ValidatorBuilder<Employee>()
-                .For(e => e.Manager.FirstName, val => 
+                .For(e => e.Manager.FirstName, val =>
                 {
-                    val.With(ctx => 
-                    {  
+                    val.With(ctx =>
+                    {
                         ctx.AddBrokenRule("Test", "test", "Test error");
                     });
                 })
@@ -334,13 +302,13 @@ namespace Validatum.Tests
             };
 
             var builder = new ValidatorBuilder<Employee>();
-            builder.ForEach(e => e.Employer.Employees, v => {});
+            builder.ForEach(e => e.Employer.Employees, v => { });
             var validator = builder.Build();
 
             // act
             var result = validator.Validate(employee);
             var brokenRule = result.BrokenRules.FirstOrDefault();
-            
+
             // assert
             Assert.NotNull(brokenRule);
             Assert.Equal("NullReferenceException", brokenRule.Rule);
@@ -349,7 +317,7 @@ namespace Validatum.Tests
         }
 
         [Fact]
-        public void ForEach_ShouldNotAddBrokenRule_WhenTargetExpression_CannotBeResolved_AndAddBrokenRuleOnException_IsFalse()
+        public void ForEach_ShouldThrowValidationException_WhenTargetExpressionCannotBeResolved_AndAddBrokenRuleOnExceptionIsFalse()
         {
             // arrange
             var employee = new Employee
@@ -359,15 +327,15 @@ namespace Validatum.Tests
             };
 
             var builder = new ValidatorBuilder<Employee>();
-            builder.ForEach(e => e.Skills, v => {});
+            builder.ForEach(e => e.Skills, v => { });
             var validator = builder.Build();
 
-            // act
-            var options = new ValidationOptions { AddBrokenRuleForException = false };
-            var result = validator.Validate(employee, options);
-            
             // assert
-            Assert.Empty(result.BrokenRules);
+            Assert.Throws<ValidationException>(() =>
+            {
+                // act
+                validator.Validate(employee, new ValidationOptions { AddBrokenRuleForException = false });
+            });
         }
 
         [Fact]
@@ -406,12 +374,12 @@ namespace Validatum.Tests
 
             // act
             var validator = new ValidatorBuilder<Employee>()
-                .When(ctx => ctx.Value.FirstName == "Ken", ctx => 
+                .When(ctx => ctx.Value.FirstName == "Ken", ctx =>
                 {
                     funcCalled = true;
                 })
                 .Build();
-            
+
             validator.Validate(employee);
 
             // assert
@@ -427,12 +395,12 @@ namespace Validatum.Tests
 
             // act
             var validator = new ValidatorBuilder<Employee>()
-                .When(ctx => ctx.Value.FirstName == "Kenny", ctx => 
+                .When(ctx => ctx.Value.FirstName == "Kenny", ctx =>
                 {
                     funcCalled = true;
                 })
                 .Build();
-            
+
             validator.Validate(employee);
 
             // assert
@@ -472,12 +440,12 @@ namespace Validatum.Tests
             // arrange
             bool funcCalled = false;
             var validator = new ValidatorBuilder<Employee>()
-                .WhenNot(ctx => ctx.Value.FirstName == "Ken", ctx => 
+                .WhenNot(ctx => ctx.Value.FirstName == "Ken", ctx =>
                 {
                     funcCalled = true;
                 })
                 .Build();
-            
+
             // act
             validator.Validate(new Employee { FirstName = "Kenny" });
 
@@ -491,12 +459,12 @@ namespace Validatum.Tests
             // arrange
             bool funcCalled = false;
             var validator = new ValidatorBuilder<Employee>()
-                .WhenNot(ctx => ctx.Value.FirstName == "Ken", ctx => 
+                .WhenNot(ctx => ctx.Value.FirstName == "Ken", ctx =>
                 {
                     funcCalled = true;
                 })
                 .Build();
-            
+
             // act
             validator.Validate(new Employee { FirstName = "Ken" });
 
@@ -542,10 +510,10 @@ namespace Validatum.Tests
                     v.With(ctx => { funcCalled = true; });
                 })
                 .Build();
-            
+
             // act
             validator.Validate(true);
-            
+
             // assert
             Assert.True(funcCalled);
         }
@@ -561,7 +529,7 @@ namespace Validatum.Tests
                     v.With(ctx => { funcCalled = true; });
                 })
                 .Build();
-            
+
             // act
             validator.Validate(false);
 
@@ -598,7 +566,7 @@ namespace Validatum.Tests
                     v.With(ctx => { funcCalled = true; });
                 })
                 .Build();
-            
+
             // act
             validator.Validate("test");
 
@@ -618,7 +586,7 @@ namespace Validatum.Tests
                     v.With(ctx => { funcCalled = true; });
                 })
                 .Build();
-            
+
             // act
             validator.Validate("test");
 
@@ -672,8 +640,8 @@ namespace Validatum.Tests
             // arrange
             string value = null;
             var validator1 = new ValidatorBuilder<string>()
-                .With(ctx => 
-                { 
+                .With(ctx =>
+                {
                     value = ctx.Value;
                 })
                 .Build();
@@ -695,8 +663,8 @@ namespace Validatum.Tests
             // arrange
             ValidationOptions valOptions = null;
             var validator1 = new ValidatorBuilder<string>()
-                .With(ctx => 
-                { 
+                .With(ctx =>
+                {
                     valOptions = ctx.Options;
                 })
                 .Build();
@@ -722,14 +690,14 @@ namespace Validatum.Tests
         {
             // arrange
             var validator1 = new ValidatorBuilder<string>()
-                .With(ctx => 
-                { 
+                .With(ctx =>
+                {
                     ctx.AddBrokenRule("test", "testVal1", "testVal1");
                 })
                 .Build();
             var validator2 = new ValidatorBuilder<string>()
-                .With(ctx => 
-                { 
+                .With(ctx =>
+                {
                     ctx.AddBrokenRule("test", "testVal2", "testVal2");
                 })
                 .Validator(validator1)
