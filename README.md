@@ -2,17 +2,18 @@
 
 Validatum is an open-source library for building fluent validation functions for .NET.
 
-
 ## Install
 
 **.NET CLI**
+
 ```cmd
-dotnet add package Validatum --version 1.0.0-rc.3
+dotnet add package Validatum --version 1.0.0
 ```
 
 **Package Manager**
+
 ```cmd
-Install-Package Validatum -Version 1.0.0-rc.3
+Install-Package Validatum -Version 1.0.0
 ```
 
 ## Platform Support
@@ -37,8 +38,8 @@ var validator = new ValidatorBuilder<Employee>()
 
 // validate
 var result = validator.Validate(
-    new Employee 
-    { 
+    new Employee
+    {
         LastName = "Simpson",
         Email = "homer[at]springfieldnuclear.com"
     }
@@ -51,6 +52,7 @@ foreach (var rule in result.BrokenRules)
 ```
 
 Output
+
 ```sh
 [Required] FirstName: Value is required.
 [Email] Email: Value must be a valid email.
@@ -59,4 +61,4 @@ Output
 
 ## Documentation
 
-Please visit https://bsheldrick.github.io/validatum (Work In Progress)
+Please visit https://bsheldrick.github.io/validatum
