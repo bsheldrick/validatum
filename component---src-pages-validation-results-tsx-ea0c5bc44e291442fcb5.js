@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[23],{Dgmt:function(n,e,t){"use strict";t.r(e);var a=t("q1tI"),l=t.n(a),u=t("9Dj+");e.default=function(){return l.a.createElement(u.a,null,l.a.createElement("h1",null,"Validation Results"))}}}]);
-//# sourceMappingURL=component---src-pages-validation-results-tsx-ea0c5bc44e291442fcb5.js.map
