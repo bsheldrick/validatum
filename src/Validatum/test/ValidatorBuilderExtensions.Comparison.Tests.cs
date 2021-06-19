@@ -1335,8 +1335,8 @@ namespace Validatum.Tests
                 .Build();
 
             // act
-            var result = validator.Validate(new Employee 
-            { 
+            var result = validator.Validate(new Employee
+            {
                 FirstName = "William",
                 LastName = "Riker"
             });
@@ -1358,8 +1358,8 @@ namespace Validatum.Tests
                 .Build();
 
             // act
-            var result = validator.Validate(new Employee 
-            { 
+            var result = validator.Validate(new Employee
+            {
                 FirstName = "test",
                 LastName = "test"
             });
@@ -1377,8 +1377,8 @@ namespace Validatum.Tests
                 .Build();
 
             // act
-            var result = validator.Validate(new Employee 
-            { 
+            var result = validator.Validate(new Employee
+            {
                 FirstName = "William",
                 LastName = "Riker"
             });
@@ -1397,8 +1397,8 @@ namespace Validatum.Tests
                 .Build();
 
             // act
-            var result = validator.Validate(new Employee 
-            { 
+            var result = validator.Validate(new Employee
+            {
                 FirstName = "William",
                 LastName = "Riker"
             });
@@ -1406,6 +1406,516 @@ namespace Validatum.Tests
 
             // assert
             Assert.Equal("test", brokenRule.Message);
-        }       
+        }
+
+        [Fact]
+        public void CompareGreaterThan_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.CompareGreaterThan<string, string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void CompareGreaterThan_ThrowsException_WhenLeftSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("leftSelector", () =>
+            {
+                ValidatorBuilderExtensions.CompareGreaterThan<string, string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void CompareGreaterThan_ThrowsException_WhenRightSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("rightSelector", () =>
+            {
+                ValidatorBuilderExtensions.CompareGreaterThan<Employee, string>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void CompareGreaterThan_ShouldAddBrokenRule_WhenValueNotGreaterThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThan(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 90000,
+                SalaryCommenced = 100000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Compare", brokenRule.Rule);
+            Assert.Equal("Salary", brokenRule.Key);
+            Assert.Equal("Value must be greater than value of SalaryCommenced", brokenRule.Message);
+        }
+
+        [Fact]
+        public void CompareGreaterThan_ShouldNotAddBrokenRule_WhenValueGreaterThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThan(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 90000
+            });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void CompareGreaterThan_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThan(e => e.Salary, e => e.SalaryCommenced, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 90000,
+                SalaryCommenced = 100000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void CompareGreaterThan_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThan(e => e.Salary, e => e.SalaryCommenced, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 90000,
+                SalaryCommenced = 100000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void CompareGreaterThanOrEqual_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.CompareGreaterThanOrEqual<string, string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void CompareGreaterThanOrEqual_ThrowsException_WhenLeftSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("leftSelector", () =>
+            {
+                ValidatorBuilderExtensions.CompareGreaterThanOrEqual<string, string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void CompareGreaterThanOrEqual_ThrowsException_WhenRightSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("rightSelector", () =>
+            {
+                ValidatorBuilderExtensions.CompareGreaterThanOrEqual<Employee, string>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void CompareGreaterThanOrEqual_ShouldAddBrokenRule_WhenValueNotGreaterThanOrEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThanOrEqual(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 90000,
+                SalaryCommenced = 100000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Compare", brokenRule.Rule);
+            Assert.Equal("Salary", brokenRule.Key);
+            Assert.Equal("Value must be greater than or equal to value of SalaryCommenced", brokenRule.Message);
+        }
+
+        [Fact]
+        public void CompareGreaterThanOrEqual_ShouldNotAddBrokenRule_WhenValueGreaterThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThanOrEqual(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 90000
+            });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void CompareGreaterThanOrEqual_ShouldNotAddBrokenRule_WhenValueEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThanOrEqual(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 100000
+            });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void CompareGreaterThanOrEqual_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThanOrEqual(e => e.Salary, e => e.SalaryCommenced, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 90000,
+                SalaryCommenced = 100000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void CompareGreaterThanOrEqual_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareGreaterThanOrEqual(e => e.Salary, e => e.SalaryCommenced, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 90000,
+                SalaryCommenced = 100000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void CompareLessThan_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.CompareLessThan<string, string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void CompareLessThan_ThrowsException_WhenLeftSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("leftSelector", () =>
+            {
+                ValidatorBuilderExtensions.CompareLessThan<string, string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void CompareLessThan_ThrowsException_WhenRightSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("rightSelector", () =>
+            {
+                ValidatorBuilderExtensions.CompareLessThan<Employee, string>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void CompareLessThan_ShouldAddBrokenRule_WhenValueNotLessThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThan(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 90000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Compare", brokenRule.Rule);
+            Assert.Equal("Salary", brokenRule.Key);
+            Assert.Equal("Value must be less than value of SalaryCommenced", brokenRule.Message);
+        }
+
+        [Fact]
+        public void CompareLessThan_ShouldNotAddBrokenRule_WhenValueLessThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThan(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 90000,
+                SalaryCommenced = 100000
+            });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void CompareLessThan_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThan(e => e.Salary, e => e.SalaryCommenced, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 90000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void CompareLessThan_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThan(e => e.Salary, e => e.SalaryCommenced, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 90000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
+
+        [Fact]
+        public void CompareLessThanOrEqual_ThrowsException_WhenBuilderIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("builder", () =>
+            {
+                ValidatorBuilderExtensions.CompareLessThanOrEqual<string, string>(null, null, null);
+            });
+        }
+
+        [Fact]
+        public void CompareLessThanOrEqual_ThrowsException_WhenLeftSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("leftSelector", () =>
+            {
+                ValidatorBuilderExtensions.CompareLessThanOrEqual<string, string>(new ValidatorBuilder<string>(), null, null);
+            });
+        }
+
+        [Fact]
+        public void CompareLessThanOrEqual_ThrowsException_WhenRightSelectorIsNull()
+        {
+            Assert.Throws<ArgumentNullException>("rightSelector", () =>
+            {
+                ValidatorBuilderExtensions.CompareLessThanOrEqual<Employee, string>(new ValidatorBuilder<Employee>(), e => e.FirstName, null);
+            });
+        }
+
+        [Fact]
+        public void CompareLessThanOrEqual_ShouldAddBrokenRule_WhenValueNotLessThanOrEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThanOrEqual(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 90000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.NotNull(brokenRule);
+            Assert.Equal("Compare", brokenRule.Rule);
+            Assert.Equal("Salary", brokenRule.Key);
+            Assert.Equal("Value must be less than or equal to value of SalaryCommenced", brokenRule.Message);
+        }
+
+        [Fact]
+        public void CompareLessThanOrEqual_ShouldNotAddBrokenRule_WhenValueLessThan()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThanOrEqual(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 90000,
+                SalaryCommenced = 100000
+            });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void CompareLessThanOrEqual_ShouldNotAddBrokenRule_WhenValueEqual()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThanOrEqual(e => e.Salary, e => e.SalaryCommenced)
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 100000
+            });
+
+            // assert
+            Assert.Empty(result.BrokenRules);
+        }
+
+        [Fact]
+        public void CompareLessThanOrEqual_ShouldPassKeyToBrokenRule_WhenKeyProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThanOrEqual(e => e.Salary, e => e.SalaryCommenced, "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 90000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Key);
+        }
+
+        [Fact]
+        public void CompareLessThanOrEqual_ShouldPassMessageToBrokenRule_WhenMessageProvided()
+        {
+            // arrange
+            var validator = new ValidatorBuilder<Employee>()
+                .CompareLessThanOrEqual(e => e.Salary, e => e.SalaryCommenced, message: "test")
+                .Build();
+
+            // act
+            var result = validator.Validate(new Employee
+            {
+                FirstName = "William",
+                LastName = "Riker",
+                Salary = 100000,
+                SalaryCommenced = 90000
+            });
+            var brokenRule = result.BrokenRules.FirstOrDefault();
+
+            // assert
+            Assert.Equal("test", brokenRule.Message);
+        }
     }
 }
