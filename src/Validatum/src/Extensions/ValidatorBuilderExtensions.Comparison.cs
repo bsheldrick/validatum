@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 namespace Validatum
 {
     public static partial class ValidatorBuilderExtensions
-    {        
+    {
         /// <summary>
         /// Adds a validator to ensure the value is greater than a specified value.
         /// </summary>
@@ -35,10 +35,10 @@ namespace Validatum
         /// <param name="other">The value to test if greater than.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> GreaterThan<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> GreaterThan<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> selector,
-            P other, 
-            string key = null, 
+            P other,
+            string key = null,
             string message = null)
             where P : IComparable
         {
@@ -53,7 +53,7 @@ namespace Validatum
             }
 
             key = key ?? selector.GetPropertyPath();
-            
+
             return builder.For(selector, p => p.GreaterThan(other, key, message));
         }
 
@@ -88,10 +88,10 @@ namespace Validatum
         /// <param name="other">The value to test if greater than.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> GreaterThanOrEqual<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> GreaterThanOrEqual<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> selector,
-            P other, 
-            string key = null, 
+            P other,
+            string key = null,
             string message = null)
             where P : IComparable
         {
@@ -106,7 +106,7 @@ namespace Validatum
             }
 
             key = key ?? selector.GetPropertyPath();
-            
+
             return builder.For(selector, p => p.GreaterThanOrEqual(other, key, message));
         }
 
@@ -140,10 +140,10 @@ namespace Validatum
         /// <param name="other">The value to test if less than.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> LessThan<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> LessThan<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> selector,
-            P other, 
-            string key = null, 
+            P other,
+            string key = null,
             string message = null)
             where P : IComparable
         {
@@ -158,7 +158,7 @@ namespace Validatum
             }
 
             key = key ?? selector.GetPropertyPath();
-            
+
             return builder.For(selector, p => p.LessThan(other, key, message));
         }
 
@@ -192,10 +192,10 @@ namespace Validatum
         /// <param name="other">The value to test if less than or equal to.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> LessThanOrEqual<T, P>(this IValidatorBuilder<T> builder, 
+        public static IValidatorBuilder<T> LessThanOrEqual<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> selector,
-            P other, 
-            string key = null, 
+            P other,
+            string key = null,
             string message = null)
             where P : IComparable
         {
@@ -210,7 +210,7 @@ namespace Validatum
             }
 
             key = key ?? selector.GetPropertyPath();
-            
+
             return builder.For(selector, p => p.LessThanOrEqual(other, key, message));
         }
 
@@ -222,10 +222,10 @@ namespace Validatum
         /// <param name="upper">The upper bound range value.</param>
         /// <param name="key">The key to use in broken rule.</param>
         /// <param name="message">The message to use in broken rule.</param>
-        public static IValidatorBuilder<T> Range<T>(this IValidatorBuilder<T> builder, 
-            T lower, 
-            T upper, 
-            string key = null, 
+        public static IValidatorBuilder<T> Range<T>(this IValidatorBuilder<T> builder,
+            T lower,
+            T upper,
+            string key = null,
             string message = null)
             where T : IComparable
         {
@@ -263,8 +263,8 @@ namespace Validatum
         public static IValidatorBuilder<T> Range<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> selector,
             P lower,
-            P upper, 
-            string key = null, 
+            P upper,
+            string key = null,
             string message = null)
             where P : IComparable
         {
@@ -289,12 +289,12 @@ namespace Validatum
             }
 
             key = key ?? selector.GetPropertyPath();
-            
+
             return builder.For(selector, p => p.Range(lower, upper, key, message));
         }
 
         /// <summary>
-        /// Adds a value to compare two values from the targets of selector expressions are equal.
+        /// Adds a validator to ensure two values from the targets of selector expressions are equal.
         /// </summary>
         /// <param name="builder">The validator builder.</param>
         /// <param name="leftSelector">The left selector expression.</param>
@@ -304,7 +304,7 @@ namespace Validatum
         public static IValidatorBuilder<T> Compare<T, P>(this IValidatorBuilder<T> builder,
             Expression<Func<T, P>> leftSelector,
             Expression<Func<T, P>> rightSelector,
-            string key = null, 
+            string key = null,
             string message = null)
         {
             if (builder is null)
@@ -327,11 +327,187 @@ namespace Validatum
 
             var leftKey = leftSelector.GetPropertyPath();
             var rightKey = rightSelector.GetPropertyPath();
-            
+
             return builder.
                 WhenNot(
                     ctx => leftFunc(ctx.Value)?.Equals(rightFunc(ctx.Value)) ?? false,
                     ctx => ctx.AddBrokenRule(nameof(Compare), key ?? leftKey, message ?? $"Value must be equal to value of {rightKey}")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value of the target of the first selector expression 
+        /// is greater than the value of the target of the second selector expression.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="leftSelector">The left selector expression.</param>
+        /// <param name="rightSelector">The right selector expression.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> CompareGreaterThan<T, P>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, P>> leftSelector,
+            Expression<Func<T, P>> rightSelector,
+            string key = null,
+            string message = null)
+            where P : IComparable
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (leftSelector is null)
+            {
+                throw new ArgumentNullException(nameof(leftSelector));
+            }
+
+            if (rightSelector is null)
+            {
+                throw new ArgumentNullException(nameof(rightSelector));
+            }
+
+            var leftFunc = leftSelector.Compile();
+            var rightFunc = rightSelector.Compile();
+
+            var leftKey = leftSelector.GetPropertyPath();
+            var rightKey = rightSelector.GetPropertyPath();
+
+            return builder.
+                WhenNot(
+                    ctx => leftFunc(ctx.Value)?.CompareTo(rightFunc(ctx.Value)) > 0,
+                    ctx => ctx.AddBrokenRule(nameof(Compare), key ?? leftKey, message ?? $"Value must be greater than value of {rightKey}")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value of the target of the first selector expression 
+        /// is greater than or equal to the value of the target of the second selector expression.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="leftSelector">The left selector expression.</param>
+        /// <param name="rightSelector">The right selector expression.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> CompareGreaterThanOrEqual<T, P>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, P>> leftSelector,
+            Expression<Func<T, P>> rightSelector,
+            string key = null,
+            string message = null)
+            where P : IComparable
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (leftSelector is null)
+            {
+                throw new ArgumentNullException(nameof(leftSelector));
+            }
+
+            if (rightSelector is null)
+            {
+                throw new ArgumentNullException(nameof(rightSelector));
+            }
+
+            var leftFunc = leftSelector.Compile();
+            var rightFunc = rightSelector.Compile();
+
+            var leftKey = leftSelector.GetPropertyPath();
+            var rightKey = rightSelector.GetPropertyPath();
+
+            return builder.
+                WhenNot(
+                    ctx => leftFunc(ctx.Value)?.CompareTo(rightFunc(ctx.Value)) >= 0,
+                    ctx => ctx.AddBrokenRule(nameof(Compare), key ?? leftKey, message ?? $"Value must be greater than or equal to value of {rightKey}")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value of the target of the first selector expression 
+        /// is less than the value of the target of the second selector expression.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="leftSelector">The left selector expression.</param>
+        /// <param name="rightSelector">The right selector expression.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> CompareLessThan<T, P>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, P>> leftSelector,
+            Expression<Func<T, P>> rightSelector,
+            string key = null,
+            string message = null)
+            where P : IComparable
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (leftSelector is null)
+            {
+                throw new ArgumentNullException(nameof(leftSelector));
+            }
+
+            if (rightSelector is null)
+            {
+                throw new ArgumentNullException(nameof(rightSelector));
+            }
+
+            var leftFunc = leftSelector.Compile();
+            var rightFunc = rightSelector.Compile();
+
+            var leftKey = leftSelector.GetPropertyPath();
+            var rightKey = rightSelector.GetPropertyPath();
+
+            return builder.
+                WhenNot(
+                    ctx => leftFunc(ctx.Value)?.CompareTo(rightFunc(ctx.Value)) < 0,
+                    ctx => ctx.AddBrokenRule(nameof(Compare), key ?? leftKey, message ?? $"Value must be less than value of {rightKey}")
+                );
+        }
+
+        /// <summary>
+        /// Adds a validator to ensure the value of the target of the first selector expression 
+        /// is less than or equal to the value of the target of the second selector expression.
+        /// </summary>
+        /// <param name="builder">The validator builder.</param>
+        /// <param name="leftSelector">The left selector expression.</param>
+        /// <param name="rightSelector">The right selector expression.</param>
+        /// <param name="key">The key to use in broken rule.</param>
+        /// <param name="message">The message to use in broken rule.</param>
+        public static IValidatorBuilder<T> CompareLessThanOrEqual<T, P>(this IValidatorBuilder<T> builder,
+            Expression<Func<T, P>> leftSelector,
+            Expression<Func<T, P>> rightSelector,
+            string key = null,
+            string message = null)
+            where P : IComparable
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (leftSelector is null)
+            {
+                throw new ArgumentNullException(nameof(leftSelector));
+            }
+
+            if (rightSelector is null)
+            {
+                throw new ArgumentNullException(nameof(rightSelector));
+            }
+
+            var leftFunc = leftSelector.Compile();
+            var rightFunc = rightSelector.Compile();
+
+            var leftKey = leftSelector.GetPropertyPath();
+            var rightKey = rightSelector.GetPropertyPath();
+
+            return builder.
+                WhenNot(
+                    ctx => leftFunc(ctx.Value)?.CompareTo(rightFunc(ctx.Value)) <= 0,
+                    ctx => ctx.AddBrokenRule(nameof(Compare), key ?? leftKey, message ?? $"Value must be less than or equal to value of {rightKey}")
                 );
         }
     }

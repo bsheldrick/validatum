@@ -15,6 +15,7 @@ namespace Validatum.Tests
         public string Phone { get; set; }
         public string[] Skills { get; set; }
         public decimal Salary { get; set; }
+        public decimal SalaryCommenced { get; set; }
         public DateTime Commenced { get; set; }
         public bool Active { get; set; }
     }
