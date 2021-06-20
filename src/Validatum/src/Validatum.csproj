@@ -10,7 +10,7 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Validatum</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Brad Sheldrick</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Validation;Fluent;Builder</PackageTags>
