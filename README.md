@@ -7,13 +7,13 @@ Validatum is an open-source library for building fluent validation functions for
 **.NET CLI**
 
 ```cmd
-dotnet add package Validatum --version 1.0.0
+dotnet add package Validatum --version 1.1.0
 ```
 
 **Package Manager**
 
 ```cmd
-Install-Package Validatum -Version 1.0.0
+Install-Package Validatum -Version 1.1.0
 ```
 
 ## Platform Support
@@ -58,6 +58,15 @@ Output
 [Email] Email: Value must be a valid email.
 [Equal] LastName: Value must equal 'Smithers'.
 ```
+
+## Why use Validatum?
+
+- Does not require inheritance of a base type.
+- Define and build functions in the scope that validation will be executed.
+- Define very complex validation logic in a single statement.
+- Easily add custom validators as inline functions.
+- Very small package size ~33KB.
+- Simple and easily extensible API.
 
 ## Documentation
 
